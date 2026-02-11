@@ -55,7 +55,3 @@ void* obtenerVec(TDAVec*TDA,size_t indice){
 size_t longitudVec(TDAVec* TDA){
     return TDA->cantEl;
 };
-
-
-
-

@@ -1,22 +1,20 @@
+#ifndef JUEGO_H
+#define JUEGO_H
+
 #include "tda_vector.h"
 #include <time.h>
 
-//ESTADOS CARTAS
 #define CARTA_OCULTA 0
 #define CARTA_VISIBLE 1
 #define CARTA_ENCONTRADA 2
 
-//PUNTOS
 #define PUNTOS_DEFAULT 25
 #define BONUS_RACHA 10
 
-//ESTADOS TABLERO
 #define ESTADO_ESPERANDO_PRIMERA 0
 #define ESTADO_ESPERANDO_SEGUNDA 1
 #define ESTADOS_COMPARANDO 2
 #define ESTADO_FIN 3
-
-
 
 typedef struct
 {
@@ -48,6 +46,13 @@ typedef struct
     int estado;    
 }s_EstadoJuego;
 
+typedef struct 
+{
+    int filas;
+    int columnas;
+    int set_imagenes;
+    int modo_jugadores;
+}s_configuracion;
 
 TDAVec* crear_tablero(int filas, int columnas);
 void mezclar_cartas(TDAVec* tablero, int total_cartas);
@@ -58,3 +63,4 @@ void procesar_fallo(s_Jugador* jugador, s_Carta* carta_1, s_Carta* carta_2);
 int verificar_fin_juego(TDAVec* tablero);
 void cambiar_turno(int*turno_actual);
 
+#endif
