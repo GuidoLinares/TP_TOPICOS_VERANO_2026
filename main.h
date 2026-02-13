@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include "juego.h"
 
@@ -20,6 +21,7 @@
 #define COLOR_CARTA_OCULTA_R 50
 #define COLOR_CARTA_OCULTA_G 100
 #define COLOR_CARTA_OCULTA_B 200
+
 
 typedef struct {
     int x;

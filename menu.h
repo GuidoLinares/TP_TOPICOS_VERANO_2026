@@ -40,8 +40,6 @@ void dibujar_menu_config(SDL_Renderer* renderer, EstadoMenu* menu, int mouseX, i
 void dibujar_rectangulo_relleno(SDL_Renderer* renderer, int x, int y, int w, int h, int r, int g, int b);
 void dibujar_texto_simple(SDL_Renderer* renderer, const char* texto, int x, int y, int tamanio);
 int punto_en_rectangulo(int px, int py, int rx, int ry, int rw, int rh);
-int inicializar_ttf();
-void cerrar_ttf();
 void dibujar_texto_ttf(SDL_Renderer* renderer, const char* texto, int x, int y, int tamanio, SDL_Color color);
 void dibujar_hud_juego(SDL_Renderer* renderer, s_Jugador* jugador, int mouseX, int mouseY);
 int detectar_boton_menu(int mouseX, int mouseY);
