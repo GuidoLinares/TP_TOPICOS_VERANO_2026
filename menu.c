@@ -112,8 +112,9 @@ int procesar_menu_principal(SDL_Renderer *renderer, SDL_Event *evento, EstadoMen
 
 void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY)
 {
-    SDL_SetRenderDrawColor(renderer, 30, 30, 50, 255);
     SDL_RenderClear(renderer);
+    if (fondo_menu)
+        SDL_RenderCopy(renderer, fondo_menu, NULL, NULL);
 
     int centro_x = 400;
     int inicio_y = 120;
