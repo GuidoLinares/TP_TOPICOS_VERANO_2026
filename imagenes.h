@@ -1,3 +1,6 @@
+#ifndef IMAGENES_H
+#define IMAGENES_H
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdint.h>
@@ -10,3 +13,5 @@ typedef enum {
 
 tFormatoImg imagenes_inicializar(void);
 SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *ruta);
+
+#endif

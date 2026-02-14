@@ -5,13 +5,14 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "config.h"
-#include "juego.h"
+
 
 #define PANTALLA_MENU 0
-#define PANTALLA_CONFIG 1
+#define PANTALLA_CONFIG 1 
 #define PANTALLA_JUEGO 2
 #define PANTALLA_STATS 3
 #define PANTALLA_SALIR 4
+#define PANTALLA_INGRESO_NOMBRES 5
 
 #define BOTON_ANCHO 200
 #define BOTON_ALTO 50
@@ -43,7 +44,6 @@ int procesar_menu_principal(SDL_Renderer *renderer, SDL_Event *evento, EstadoMen
 void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY);
 int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY);
 int detectar_boton_menu(int mouseX, int mouseY);
-void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador *jugador, int mouseX, int mouseY);
 void liberar_menu();
 
 #endif
