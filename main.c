@@ -1,30 +1,10 @@
 #include <SDL.h>
-#include <SDL_image.h>
 #include <stdio.h>
 #include "main.h"
 #include "menu.h"
 #include "config.h"
 #include "texto.h"
-
-SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *ruta)
-{
-    SDL_Surface *surface = IMG_Load(ruta);
-    if (surface == NULL)
-    {
-        printf("Error al cargar imagen '%s': %s\n", ruta, IMG_GetError());
-        return NULL;
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    if (texture == NULL)
-    {
-        return NULL;
-    }
-
-    return texture;
-}
+#include "imagenes.h"
 
 Posicion calcular_posicion_carta(int indice, int filas, int columnas)
 {
@@ -116,19 +96,15 @@ void dibujar_tablero(SDL_Renderer *renderer, TDAVec *tablero, int filas, int col
 
 int main(int argc, char *argv[])
 {
-    SDL_Init(SDL_INIT_VIDEO);
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         printf("Error al inicializar SDL %s \n", SDL_GetError());
         return -1;
     }
 
-    int img_flags = IMG_INIT_PNG | IMG_INIT_JPG;
-    if (!(IMG_Init(img_flags) & img_flags))
+    if (!imagenes_inicializar())
     {
-        printf("Error al cargar SDL_image %s\n", IMG_GetError());
-        SDL_Quit();
-        return -1;
+        printf("No se pudieron inicializar formatos de imagen\n");
     }
 
     SDL_Window *ventana = SDL_CreateWindow(
@@ -169,9 +145,11 @@ int main(int argc, char *argv[])
         SDL_Quit();
         return 1;
     }
-    
+
+    inicializar_fonts();
     EstadoMenu estado_menu;
     inicializar_menu(&estado_menu);
+    cargar_recursos_menu(renderer);
 
     int ejecutando = 1;
     SDL_Event evento;
@@ -386,6 +364,7 @@ int main(int argc, char *argv[])
     SDL_DestroyWindow(ventana);
     SDL_Quit();
     finalizar_ttf();
+    liberar_menu();
 
     return 0;
 }

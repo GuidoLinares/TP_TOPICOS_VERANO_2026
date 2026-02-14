@@ -1,20 +1,25 @@
 #include "menu.h"
 #include "texto.h"
+#include "imagenes.h"
 
-TTF_Font *fuente_grande = NULL;
-TTF_Font *fuente_mediana = NULL;
-TTF_Font *fuente_pequena = NULL;
+static SDL_Texture *fondo_menu = NULL;
 
 void inicializar_menu(EstadoMenu *menu)
 {
-    fuente_grande = cargar_font("fnt/arial.ttf", 32);
-    fuente_mediana = cargar_font("fnt/arial.ttf", 24);
-    fuente_pequena = cargar_font("fnt/arial.ttf", 16);
-
     menu->pantalla_actual = PANTALLA_MENU;
     cargar_configuracion(&menu->config);
     strcpy(menu->nombre_jugador1, "JUGADOR1");
     strcpy(menu->nombre_jugador2, "JUGADOR2");
+}
+
+void cargar_recursos_menu(SDL_Renderer *renderer)
+{
+    fondo_menu = cargar_textura(renderer, "img/fondo_menu.jpg");
+
+    if (!fondo_menu)
+    {
+        printf("ERROR: fondo_menu es NULL\n");
+    }
 }
 
 int punto_en_rectangulo(int px, int py, int rx, int ry, int rw, int rh)
@@ -32,22 +37,11 @@ void dibujar_rectangulo_relleno(SDL_Renderer *renderer, int x, int y, int w, int
     SDL_RenderDrawRect(renderer, &rect);
 }
 
-void dibujar_texto_simple(SDL_Renderer *renderer, const char *texto, int x, int y, int tamanio)
-{
-    int offset_x = 0;
-    for (int i = 0; texto[i] != '\0'; i++)
-    {
-        SDL_Rect rect = {x + offset_x, y, 8, 12};
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderDrawRect(renderer, &rect);
-        offset_x += 10;
-    }
-}
-
 void dibujar_menu_principal(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY)
 {
-    SDL_SetRenderDrawColor(renderer, 30, 30, 50, 255);
     SDL_RenderClear(renderer);
+    if (fondo_menu)
+        SDL_RenderCopy(renderer, fondo_menu, NULL, NULL);
 
     int centro_x = 400;
     int inicio_y = 150;
@@ -125,6 +119,10 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
     int inicio_y = 120;
     int espaciado_y = 100;
 
+    int ancho_boton = 270;
+    int alto_boton = 60;
+    int separacion_horizontal = 40;
+
     SDL_Color blanco = {255, 255, 255, 255};
     SDL_Color amarillo = {255, 215, 0, 255};
 
@@ -150,15 +148,18 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
 
     dibujar_texto_ttf(renderer, "Set de imagenes:", centro_x, inicio_y + espaciado_y - 20, 20, blanco);
 
-    dibujar_rectangulo_relleno(renderer, centro_x - 130, inicio_y + espaciado_y, 120, 50,
+    int x_izq = centro_x - ancho_boton - separacion_horizontal / 2;
+    int x_der = centro_x + separacion_horizontal / 2;
+
+    dibujar_rectangulo_relleno(renderer, x_izq, inicio_y + espaciado_y, ancho_boton, alto_boton,
                                menu->config.set_imagenes == 0 ? 100 : 60,
                                menu->config.set_imagenes == 0 ? 150 : 90, 70);
-    dibujar_texto_ttf(renderer, "SET 1", centro_x - 70, inicio_y + espaciado_y + 25, 20, blanco);
+    dibujar_texto_ttf(renderer, "LENGUAJES DE PROGRAMACION", x_izq + ancho_boton / 2, inicio_y + espaciado_y + alto_boton / 2, 20, blanco);
 
-    dibujar_rectangulo_relleno(renderer, centro_x + 10, inicio_y + espaciado_y, 120, 50,
+    dibujar_rectangulo_relleno(renderer, x_der, inicio_y + espaciado_y, ancho_boton, alto_boton,
                                menu->config.set_imagenes == 1 ? 100 : 60,
                                menu->config.set_imagenes == 1 ? 150 : 90, 70);
-    dibujar_texto_ttf(renderer, "SET 2", centro_x + 70, inicio_y + espaciado_y + 25, 20, blanco);
+    dibujar_texto_ttf(renderer, "NAVEGADORES WEB", x_der + ancho_boton / 2, inicio_y + espaciado_y + alto_boton / 2, 20, blanco);
 
     dibujar_texto_ttf(renderer, "Numero de jugadores:", centro_x, inicio_y + espaciado_y * 2 - 20, 20, blanco);
 
@@ -247,41 +248,6 @@ int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *
     return 0;
 }
 
-void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, int tamanio, SDL_Color color)
-{
-    TTF_Font *fuente = fuente_mediana;
-
-    if (tamanio >= 32)
-        fuente = fuente_grande;
-    else if (tamanio >= 24)
-        fuente = fuente_mediana;
-    else
-        fuente = fuente_pequena;
-
-    if (!fuente)
-        return;
-
-    SDL_Surface *superficie = TTF_RenderText_Blended(fuente, texto, color);
-    if (!superficie)
-        return;
-
-    SDL_Texture *textura = SDL_CreateTextureFromSurface(renderer, superficie);
-
-    int texto_ancho = superficie->w;
-    int texto_alto = superficie->h;
-
-    SDL_Rect destino = {
-        x - texto_ancho / 2,
-        y - texto_alto / 2,
-        texto_ancho,
-        texto_alto};
-
-    SDL_RenderCopy(renderer, textura, NULL, &destino);
-
-    SDL_DestroyTexture(textura);
-    SDL_FreeSurface(superficie);
-}
-
 int detectar_boton_menu(int mouseX, int mouseY)
 {
     return punto_en_rectangulo(mouseX, mouseY, 20, 20, 120, 40);
@@ -329,4 +295,10 @@ void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador *jugador, int mouseX, i
     char stats_texto[100];
     sprintf(stats_texto, "Aciertos: %d  |  Fallos: %d", jugador->aciertos, jugador->fallos);
     dibujar_texto_ttf(renderer, stats_texto, 400, 760, 16, blanco);
+}
+
+void liberar_menu()
+{
+    if (fondo_menu)
+        SDL_DestroyTexture(fondo_menu);
 }

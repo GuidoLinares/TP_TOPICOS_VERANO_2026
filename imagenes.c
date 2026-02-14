@@ -1,4 +1,5 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include "imagenes.h"
 
@@ -22,4 +23,24 @@ tFormatoImg imagenes_inicializar(void)
         formatos |= IMAGEN_PNG;
 
     return formatos;
+}
+
+SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *ruta)
+{
+    SDL_Surface *surface = IMG_Load(ruta);
+    if (surface == NULL)
+    {
+        printf("Error al cargar imagen '%s': %s\n", ruta, IMG_GetError());
+        return NULL;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    if (texture == NULL)
+    {
+        return NULL;
+    }
+
+    return texture;
 }

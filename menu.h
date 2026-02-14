@@ -33,15 +33,17 @@ typedef struct {
 } EstadoMenu;
 
 void inicializar_menu(EstadoMenu* menu);
+void cargar_recursos_menu(SDL_Renderer *renderer);
 int procesar_menu_principal(SDL_Renderer* renderer, SDL_Event* evento, EstadoMenu* menu, int mouseX, int mouseY);
 int procesar_menu_config(SDL_Renderer* renderer, SDL_Event* evento, EstadoMenu* menu, int mouseX, int mouseY);
 void dibujar_menu_principal(SDL_Renderer* renderer, EstadoMenu* menu, int mouseX, int mouseY);
 void dibujar_menu_config(SDL_Renderer* renderer, EstadoMenu* menu, int mouseX, int mouseY);
 void dibujar_rectangulo_relleno(SDL_Renderer* renderer, int x, int y, int w, int h, int r, int g, int b);
-void dibujar_texto_simple(SDL_Renderer* renderer, const char* texto, int x, int y, int tamanio);
 int punto_en_rectangulo(int px, int py, int rx, int ry, int rw, int rh);
 void dibujar_texto_ttf(SDL_Renderer* renderer, const char* texto, int x, int y, int tamanio, SDL_Color color);
 void dibujar_hud_juego(SDL_Renderer* renderer, s_Jugador* jugador, int mouseX, int mouseY);
 int detectar_boton_menu(int mouseX, int mouseY);
+void liberar_menu();
+
 
 #endif
