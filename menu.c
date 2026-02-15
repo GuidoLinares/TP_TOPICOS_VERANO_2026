@@ -152,7 +152,7 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
                                menu->config.filas == 4 && menu->config.columnas == 5 ? 150 : 90, 70);
     dibujar_texto_ttf(renderer, "4x5", centro_x + 110, inicio_y + 25, 20, blanco);
 
-    dibujar_texto_ttf(renderer, "Set de imagenes:", centro_x, inicio_y + espaciado_y - 20, 20, blanco);
+    dibujar_texto_ttf(renderer, "Set de cartas:", centro_x, inicio_y + espaciado_y - 20, 20, blanco);
 
     int x_izq = centro_x - ancho_boton - separacion_horizontal / 2;
     int x_der = centro_x + separacion_horizontal / 2;
@@ -167,17 +167,33 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
                                menu->config.set_imagenes == 1 ? 150 : 90, 70);
     dibujar_texto_ttf(renderer, "NAVEGADORES WEB", x_der + ancho_boton / 2, inicio_y + espaciado_y + alto_boton / 2, 20, blanco);
 
-    dibujar_texto_ttf(renderer, "Numero de jugadores:", centro_x, inicio_y + espaciado_y * 2 - 20, 20, blanco);
+    dibujar_texto_ttf(renderer, "Color dorso de cartas:", centro_x, inicio_y + espaciado_y * 2 - 20, 20, blanco);
+//ordenar variables de cada boton
+    int ancho_boton_dorso = 130;
+    int x_izq_set = centro_x - ancho_boton_dorso - separacion_horizontal / 2;
+    int x_der_set = centro_x + separacion_horizontal / 2;
 
-    dibujar_rectangulo_relleno(renderer, centro_x - 80, inicio_y + espaciado_y * 2, 60, 50,
+    dibujar_rectangulo_relleno(renderer, x_izq_set, inicio_y + espaciado_y * 2, ancho_boton_dorso, alto_boton,
+                               menu->config.set_dorso == 0 ? 100 : 60,
+                               menu->config.set_dorso == 0 ? 150 : 90, 70);
+    dibujar_texto_ttf(renderer, "ROJO", x_izq_set + ancho_boton_dorso / 2, inicio_y + espaciado_y * 2 + alto_boton / 2, 20, blanco);
+
+    dibujar_rectangulo_relleno(renderer, x_der_set + 20, inicio_y + espaciado_y * 2, ancho_boton_dorso, alto_boton,
+                               menu->config.set_dorso == 1 ? 100 : 60,
+                               menu->config.set_dorso == 1 ? 150 : 90, 70);
+    dibujar_texto_ttf(renderer, "VIOLETA", x_der_set + ancho_boton_dorso / 2, inicio_y + espaciado_y * 2 + alto_boton / 2, 20, blanco);
+
+    dibujar_texto_ttf(renderer, "Numero de jugadores:", centro_x, inicio_y + espaciado_y * 3 - 20, 20, blanco);
+
+    dibujar_rectangulo_relleno(renderer, centro_x - 80, inicio_y + espaciado_y * 3, 80, alto_boton,
                                menu->config.modo_jugadores == 1 ? 100 : 60,
                                menu->config.modo_jugadores == 1 ? 150 : 90, 70);
-    dibujar_texto_ttf(renderer, "1", centro_x - 50, inicio_y + espaciado_y * 2 + 25, 20, blanco);
+    dibujar_texto_ttf(renderer, "1", centro_x - 50, inicio_y + espaciado_y * 3 + 25, 20, blanco);
 
-    dibujar_rectangulo_relleno(renderer, centro_x + 20, inicio_y + espaciado_y * 2, 60, 50,
+    dibujar_rectangulo_relleno(renderer, centro_x + 20, inicio_y + espaciado_y * 3, 80, alto_boton,
                                menu->config.modo_jugadores == 2 ? 100 : 60,
                                menu->config.modo_jugadores == 2 ? 150 : 90, 70);
-    dibujar_texto_ttf(renderer, "2", centro_x + 50, inicio_y + espaciado_y * 2 + 25, 20, blanco);
+    dibujar_texto_ttf(renderer, "2", centro_x + 50, inicio_y + espaciado_y * 3 + 25, 20, blanco);
 
     int hover_guardar = punto_en_rectangulo(mouseX, mouseY, centro_x - 120, 550, 100, 50);
     dibujar_rectangulo_relleno(renderer, centro_x - 120, 550, 100, 50,
@@ -226,12 +242,22 @@ int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *
             menu->config.set_imagenes = 1;
         }
 
-        if (punto_en_rectangulo(mouseX, mouseY, centro_x - 80, inicio_y + espaciado_y * 2, 60, 50))
+        if (punto_en_rectangulo(mouseX, mouseY, centro_x - 150, inicio_y + espaciado_y * 2, 120, 50))
+        {
+            menu->config.set_dorso = 0;
+        }
+
+        if (punto_en_rectangulo(mouseX, mouseY, centro_x + 30, inicio_y + espaciado_y * 2, 120, 50))
+        {
+            menu->config.set_dorso = 1;
+        }
+
+        if (punto_en_rectangulo(mouseX, mouseY, centro_x - 80, inicio_y + espaciado_y * 3, 60, 50))
         {
             menu->config.modo_jugadores = 1;
         }
 
-        if (punto_en_rectangulo(mouseX, mouseY, centro_x + 20, inicio_y + espaciado_y * 2, 60, 50))
+        if (punto_en_rectangulo(mouseX, mouseY, centro_x + 20, inicio_y + espaciado_y * 3, 60, 50))
         {
             menu->config.modo_jugadores = 2;
         }

@@ -143,6 +143,8 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
+
+    //donde agregar todo esto? dentro de liberar_menu?
     IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(ventana);

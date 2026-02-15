@@ -12,6 +12,7 @@ typedef struct {
     int filas;
     int columnas;
     int set_imagenes;
+    int set_dorso;
     int modo_jugadores;
     int volumen;
 } Configuracion;

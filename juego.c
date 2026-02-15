@@ -221,7 +221,17 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
         estado_juego->textura_cartas[i] = cargar_textura(renderer, ruta);
     }
 
-    estado_juego->textura_dorso = cargar_textura(renderer, "img/dorso_1.jpg");
+    char ruta_dorso[100];
+    if (estado_juego->config.set_dorso == 0)
+    {
+        strcpy(ruta_dorso, "img/dorso_0.jpg");
+    }
+    else
+    {
+        strcpy(ruta_dorso, "img/dorso_1.jpg");
+    }
+
+    estado_juego->textura_dorso = cargar_textura(renderer, ruta_dorso);
     estado_juego->juego_iniciado = 1;
 }
 
@@ -230,10 +240,8 @@ void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int 
     if (!estado_juego || !estado_juego->tablero)
         return;
 
-    // ---- Click del mouse ----
     if (evento->type == SDL_MOUSEBUTTONDOWN)
     {
-        // Botón volver al menú
         if (detectar_boton_menu(mouseX, mouseY))
         {
             finalizar_juego(estado_juego);
@@ -253,7 +261,6 @@ void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int 
         if (carta->estado != CARTA_OCULTA)
             return;
 
-        // ---- Primera carta ----
         if (estado_juego->turno_actual == ESTADO_ESPERANDO_PRIMERA)
         {
             estado_juego->carta_seleccionada_1 = indice;
@@ -261,7 +268,6 @@ void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int 
             estado_juego->turno_actual = ESTADO_ESPERANDO_SEGUNDA;
         }
 
-        // ---- Segunda carta ----
         else if (estado_juego->turno_actual == ESTADO_ESPERANDO_SEGUNDA)
         {
             estado_juego->carta_seleccionada_2 = indice;
