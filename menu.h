@@ -33,6 +33,7 @@ typedef struct
     Configuracion config;
     char nombre_jugador1[50];
     char nombre_jugador2[50];
+    int jugador_escribiendo;
 } EstadoMenu;
 
 void inicializar_menu(EstadoMenu *menu);
@@ -45,5 +46,7 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
 int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY);
 int detectar_boton_menu(int mouseX, int mouseY);
 void liberar_menu();
+void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu);
+void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu);
 
 #endif

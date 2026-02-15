@@ -84,7 +84,12 @@ int procesar_menu_principal(SDL_Renderer *renderer, SDL_Event *evento, EstadoMen
 
         if (punto_en_rectangulo(mouseX, mouseY, centro_x - 100, inicio_y, BOTON_ANCHO, BOTON_ALTO))
         {
-            menu->pantalla_actual = PANTALLA_JUEGO;
+            menu->pantalla_actual = PANTALLA_INGRESO_NOMBRES;
+            menu->jugador_escribiendo = 1;
+            menu->nombre_jugador1[0] = '\0';
+            menu->nombre_jugador2[0] = '\0';
+
+            SDL_StartTextInput();
             return 1;
         }
 
@@ -258,4 +263,98 @@ void liberar_menu()
 {
     if (fondo_menu)
         SDL_DestroyTexture(fondo_menu);
+}
+
+void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu)
+{
+    if (evento->type == SDL_TEXTINPUT)
+    {
+        char *nombre_actual = (menu->jugador_escribiendo == 1)
+                                  ? menu->nombre_jugador1
+                                  : menu->nombre_jugador2;
+        if (strlen(nombre_actual) + strlen(evento->text.text) < 20)
+        {
+            strcat(nombre_actual, evento->text.text);
+        }
+    }
+
+    else if (evento->type == SDL_KEYDOWN)
+    {
+        if (evento->key.keysym.sym == SDLK_BACKSPACE)
+        {
+            char *nombre = (menu->jugador_escribiendo == 1)
+                               ? menu->nombre_jugador1
+                               : menu->nombre_jugador2;
+
+            int len = strlen(nombre);
+            if (len > 0)
+                nombre[len - 1] = '\0';
+        }
+
+        if (evento->key.keysym.sym == SDLK_RETURN)
+        {
+            if (menu->config.modo_jugadores == 2 && menu->jugador_escribiendo == 1)
+            {
+                menu->jugador_escribiendo = 2;
+            }
+
+            else
+            {
+                SDL_StopTextInput();
+                menu->pantalla_actual = PANTALLA_JUEGO;
+            }
+        }
+    }
+}
+
+void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu)
+{
+    if (fondo_menu)
+        SDL_RenderCopy(renderer, fondo_menu, NULL, NULL);
+
+    int centro_x = 400;
+    int inicio_y = 150;
+    int espaciado = 120;
+
+    SDL_Color blanco = {255, 255, 255, 255};
+    SDL_Color amarillo = {255, 255, 0, 255};
+    SDL_Color gris = {100, 100, 100, 255};
+
+    dibujar_texto_ttf(renderer, "CONFIGURACION DE JUGADORES", centro_x, 60, 32, blanco);
+
+    SDL_Color colorJ1 = (menu->jugador_escribiendo == 1) ? amarillo : blanco;
+    dibujar_texto_ttf(renderer, "Nombre Jugador 1:", centro_x, inicio_y, 24, colorJ1);
+
+    SDL_Rect rectJ1 = {centro_x - 150, inicio_y + 30, 300, 50};
+    SDL_SetRenderDrawColor(renderer, colorJ1.r, colorJ1.g, colorJ1.b, 255);
+    SDL_RenderDrawRect(renderer, &rectJ1);
+
+    if (strlen(menu->nombre_jugador1) > 0)
+    {
+        dibujar_texto_ttf(renderer, menu->nombre_jugador1, centro_x, inicio_y + 52, 24, blanco);
+    }
+    else if (menu->jugador_escribiendo == 1)
+    {
+        dibujar_texto_ttf(renderer, "Escribiendo...", centro_x, 240, 18, gris);
+    }
+
+    if (menu->config.modo_jugadores == 2)
+    {
+        SDL_Color colorJ2 = (menu->jugador_escribiendo == 2) ? amarillo : blanco;
+        dibujar_texto_ttf(renderer, "Ingresar Nombre Jugador 2:", centro_x, inicio_y + espaciado, 24, colorJ2);
+
+        SDL_Rect rectJ2 = {centro_x - 150, inicio_y + espaciado + 30, 300, 45};
+        SDL_SetRenderDrawColor(renderer, colorJ2.r, colorJ2.g, colorJ2.b, 255);
+        SDL_RenderDrawRect(renderer, &rectJ2);
+
+        if (strlen(menu->nombre_jugador2) > 0)
+        {
+            dibujar_texto_ttf(renderer, menu->nombre_jugador2, centro_x, inicio_y + espaciado + 52, 24, blanco);
+        }
+        else if (menu->jugador_escribiendo == 2)
+        {
+            dibujar_texto_ttf(renderer, "...", centro_x, inicio_y + espaciado + 52, 24, blanco);
+        }
+    }
+    dibujar_texto_ttf(renderer, "Presione ENTER para confirmar", centro_x, 520, 18, blanco);
 }

@@ -99,6 +99,9 @@ int main(int argc, char *argv[])
             case PANTALLA_CONFIG:
                 procesar_menu_config(renderer, &evento, &estado_menu, mouseX, mouseY);
                 break;
+            case PANTALLA_INGRESO_NOMBRES:
+                procesar_ingreso_nombres(&evento, &estado_menu);
+                break;
             case PANTALLA_JUEGO:
                 procesar_eventos_juego(&estado_juego, &evento, mouseX, mouseY, &estado_menu);
                 break;
@@ -119,6 +122,8 @@ int main(int argc, char *argv[])
             actualizar_juego(&estado_juego, &estado_menu);
         }
 
+        SDL_RenderClear(renderer);
+
         switch (estado_menu.pantalla_actual)
         {
         case PANTALLA_MENU:
@@ -126,6 +131,9 @@ int main(int argc, char *argv[])
             break;
         case PANTALLA_CONFIG:
             dibujar_menu_config(renderer, &estado_menu, mouseX, mouseY);
+            break;
+        case PANTALLA_INGRESO_NOMBRES:
+            dibujar_ingreso_nombres(renderer, &estado_menu);
             break;
         case PANTALLA_JUEGO:
             dibujar_juego(renderer, &estado_juego, mouseX, mouseY);
