@@ -8,7 +8,6 @@
 #include "menu.h"
 #include "juego.h"
 
-
 #define COLOR_FONDO_R 40
 #define COLOR_FONDO_G 40
 #define COLOR_FONDO_B 60
@@ -30,6 +29,6 @@ void dibujar_tablero(SDL_Renderer *renderer, TDAVec *tablero, int filas, int col
                      SDL_Texture *textura_dorso, SDL_Texture **texturas_cartas, int carta_hover);
 
 void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mouseX, int mouseY);
-void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador *jugador, int mouseX, int mouseY);
+void dibujar_hud_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mouseX, int mouseY);
 
 #endif

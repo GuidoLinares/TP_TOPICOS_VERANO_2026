@@ -88,7 +88,7 @@ int calcular_puntos(int aciertos_consecutivos);
 void procesar_acierto(s_Jugador *jugador, s_Carta *carta_1, s_Carta *carta_2);
 void procesar_fallo(s_Jugador *jugador, s_Carta *carta_1, s_Carta *carta_2);
 int verificar_fin_juego(TDAVec *tablero);
-void cambiar_turno(int *turno_actual);
+void cambiar_turno(s_EstadoJuego *estado);
 void finalizar_juego(s_EstadoJuego *estado_juego);
 void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Renderer *renderer);
 void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int mouseX, int mouseY, EstadoMenu *estado_menu);

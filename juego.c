@@ -111,13 +111,19 @@ int verificar_fin_juego(TDAVec *tablero)
     return 1;
 }
 
-void cambiar_turno(int *turno_actual)
+void cambiar_turno(s_EstadoJuego *estado)
 {
 
-    if (*turno_actual == 1)
-        *turno_actual = 2;
+    if (estado->jugador_actual == 1)
+    {
+        estado->jugador_actual = 2;
+    }
     else
-        *turno_actual = 1;
+    {
+        estado->jugador_actual = 1;
+    }
+
+    printf("DEBUG: El turno cambio a %d\n", estado->jugador_actual);
 }
 
 void finalizar_juego(s_EstadoJuego *estado_juego)
@@ -293,14 +299,14 @@ void actualizar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu)
 
         s_Carta *c2 = (s_Carta *)obtenerVec(estado_juego->tablero, estado_juego->carta_seleccionada_2);
 
-        s_Jugador *jugador_actual =
+        s_Jugador *jugador_actual_ptr =
             (estado_juego->jugador_actual == 1)
                 ? &estado_juego->jugador1
                 : &estado_juego->jugador2;
 
         if (comparar_cartas(c1, c2))
         {
-            procesar_acierto(jugador_actual, c1, c2);
+            procesar_acierto(jugador_actual_ptr, c1, c2);
 
             if (verificar_fin_juego(estado_juego->tablero))
             {
@@ -311,12 +317,11 @@ void actualizar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu)
         }
         else
         {
-            procesar_fallo(jugador_actual, c1, c2);
+            procesar_fallo(jugador_actual_ptr, c1, c2);
 
-            if (estado_juego->modo_competitivo)
+            if (estado_juego->config.modo_jugadores == 2)
             {
-                estado_juego->turno_actual =
-                    (estado_juego->turno_actual == 1) ? 2 : 1;
+                cambiar_turno(estado_juego);
             }
         }
 

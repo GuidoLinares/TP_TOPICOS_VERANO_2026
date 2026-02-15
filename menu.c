@@ -282,7 +282,7 @@ int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *
 
 int detectar_boton_menu(int mouseX, int mouseY)
 {
-    return punto_en_rectangulo(mouseX, mouseY, 20, 20, 120, 40);
+    return punto_en_rectangulo(mouseX, mouseY, 340, 700, 120, 40);
 }
 
 void liberar_menu()

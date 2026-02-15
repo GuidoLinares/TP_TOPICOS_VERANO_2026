@@ -52,48 +52,74 @@ void dibujar_carta(SDL_Renderer *renderer, s_Carta *carta, int x, int y, SDL_Tex
     }
 }
 
-void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador *jugador, int mouseX, int mouseY)
+void dibujar_hud_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mouseX, int mouseY)
 {
     SDL_Color blanco = {255, 255, 255, 255};
     SDL_Color amarillo = {255, 215, 0, 255};
     SDL_Color verde = {50, 255, 100, 255};
     SDL_Color rojo = {255, 80, 80, 255};
+    SDL_Color azul_turno = {50, 120, 200, 255};
+
+    int ancho_p = 180;
+    int alto_p = 60;
+    int margen = 20;
+
+    int x_menu = 340;
+    int y_menu = 680;
+
+    SDL_Color c1 = (estado_juego->jugador_actual == 1) ? azul_turno : verde;
+    dibujar_rectangulo_relleno(renderer, margen, margen, ancho_p, alto_p, c1.r, c1.g, c1.b);
+
+    if (estado_juego->jugador_actual == 1)
+    {
+        SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+        SDL_Rect r1 = {margen - 2, margen - 2, ancho_p + 4, alto_p + 4};
+        SDL_RenderDrawRect(renderer, &r1);
+    }
+
+    char nombre1[60], puntos1[50];
+    sprintf(nombre1, "Jugador: %s", estado_juego->jugador1.nombre);
+    sprintf(puntos1, "Puntos: %d", estado_juego->jugador1.puntos);
+    dibujar_texto_ttf(renderer, nombre1, margen + ancho_p / 2, margen + 18, 16, blanco);
+    dibujar_texto_ttf(renderer, puntos1, margen + ancho_p / 2, margen + 40, 14, amarillo);
+
+    if (estado_juego->config.modo_jugadores == 2)
+    {
+        char msj_turno[100];
+        s_Jugador *jugador_en_turno = (estado_juego->jugador_actual == 1) ? &estado_juego->jugador1 : &estado_juego->jugador2;
+        sprintf(msj_turno, "TURNO DE: %s", jugador_en_turno->nombre);
+        dibujar_texto_ttf(renderer, msj_turno, 400, 35, 24, amarillo);
+
+        int x2 = 800 - ancho_p - margen;
+        SDL_Color c2 = (estado_juego->jugador_actual == 2) ? azul_turno : verde;
+        dibujar_rectangulo_relleno(renderer, x2, margen, ancho_p, alto_p, c2.r, c2.g, c2.b);
+
+        if (estado_juego->jugador_actual == 2)
+        {
+            SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+            SDL_Rect r2 = {x2 - 2, margen - 2, ancho_p + 4, alto_p + 4};
+            SDL_RenderDrawRect(renderer, &r2);
+        }
+
+        char nombre2[60], puntos2[50];
+        sprintf(nombre2, "Jugador: %s", estado_juego->jugador2.nombre);
+        sprintf(puntos2, "Puntos: %d", estado_juego->jugador2.puntos);
+        dibujar_texto_ttf(renderer, nombre2, x2 + ancho_p / 2, margen + 18, 16, blanco);
+        dibujar_texto_ttf(renderer, puntos2, x2 + ancho_p / 2, margen + 40, 14, amarillo);
+    }
 
     int hover_menu = detectar_boton_menu(mouseX, mouseY);
-    dibujar_rectangulo_relleno(renderer, 20, 20, 120, 40,
+    dibujar_rectangulo_relleno(renderer, x_menu, y_menu, 120, 40,
                                hover_menu ? 100 : 70,
                                hover_menu ? 80 : 60,
                                hover_menu ? 80 : 60);
-    dibujar_texto_ttf(renderer, "MENU", 80, 40, 16, hover_menu ? amarillo : blanco);
+    dibujar_texto_ttf(renderer, "MENU", x_menu + 60, y_menu + 20, 16, hover_menu ? amarillo : blanco);
 
-    char nombre_texto[60];
-    sprintf(nombre_texto, "Jugador: %s", jugador->nombre);
-    dibujar_texto_ttf(renderer, nombre_texto, 400, 25, 20, blanco);
+    char stats[100];
+    s_Jugador *actual = (estado_juego->jugador_actual == 1) ? &estado_juego->jugador1 : &estado_juego->jugador2;
 
-    char puntos_texto[50];
-    sprintf(puntos_texto, "Puntos: %d", jugador->puntos);
-    dibujar_rectangulo_relleno(renderer, 630, 15, 150, 35, 50, 80, 120);
-    dibujar_texto_ttf(renderer, puntos_texto, 705, 32, 20, blanco);
-
-    SDL_Color color_racha = blanco;
-    if (jugador->racha >= 5)
-        color_racha = rojo;
-    else if (jugador->racha >= 3)
-        color_racha = amarillo;
-    else if (jugador->racha >= 1)
-        color_racha = verde;
-
-    char racha_texto[50];
-    if (jugador->racha > 0)
-    {
-        sprintf(racha_texto, "Racha x%d", jugador->racha);
-        dibujar_rectangulo_relleno(renderer, 630, 55, 150, 30, 40, 60, 90);
-        dibujar_texto_ttf(renderer, racha_texto, 705, 70, 18, color_racha);
-    }
-
-    char stats_texto[100];
-    sprintf(stats_texto, "Aciertos: %d  |  Fallos: %d", jugador->aciertos, jugador->fallos);
-    dibujar_texto_ttf(renderer, stats_texto, 400, 760, 16, blanco);
+    sprintf(stats, "Turno de %s  |  Racha: x%d  |  Aciertos: %d", actual->nombre, actual->racha, actual->aciertos);
+    dibujar_texto_ttf(renderer, stats, 400, 650, 16, blanco);
 }
 
 void dibujar_tablero(SDL_Renderer *renderer, TDAVec *tablero, int filas, int columnas, SDL_Texture *textura_dorso, SDL_Texture **texturas_cartas, int carta_hover)
@@ -127,36 +153,8 @@ void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mous
                     estado_juego->textura_cartas,
                     carta_hover);
 
-    if (estado_juego->jugador_actual == 1)
-    {
-        dibujar_hud_juego(renderer,
-                          &estado_juego->jugador1,
-                          mouseX,
-                          mouseY);
-    }
-    else
-    {
-        dibujar_hud_juego(renderer,
-                          &estado_juego->jugador2,
-                          mouseX,
-                          mouseY);
-    }
-
-    if (estado_juego->config.modo_jugadores == 2)
-    {
-        SDL_Color blanco = {255, 255, 255, 255};
-
-        char turno_texto[50];
-        sprintf(turno_texto, "Turno de: %s",
-                estado_juego->jugador_actual == 1
-                    ? estado_juego->jugador1.nombre
-                    : estado_juego->jugador2.nombre);
-
-        dibujar_texto_ttf(renderer,
-                          turno_texto,
-                          400,
-                          30,
-                          22,
-                          blanco);
-    }
+    dibujar_hud_juego(renderer,
+                      estado_juego,
+                      mouseX,
+                      mouseY);
 }
