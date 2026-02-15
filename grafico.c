@@ -52,7 +52,7 @@ void dibujar_carta(SDL_Renderer *renderer, s_Carta *carta, int x, int y, SDL_Tex
     }
 }
 
-void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador jugador, int mouseX, int mouseY)
+void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador *jugador, int mouseX, int mouseY)
 {
     SDL_Color blanco = {255, 255, 255, 255};
     SDL_Color amarillo = {255, 215, 0, 255};
@@ -67,32 +67,32 @@ void dibujar_hud_juego(SDL_Renderer *renderer, s_Jugador jugador, int mouseX, in
     dibujar_texto_ttf(renderer, "MENU", 80, 40, 16, hover_menu ? amarillo : blanco);
 
     char nombre_texto[60];
-    sprintf(nombre_texto, "Jugador: %s", jugador.nombre);
+    sprintf(nombre_texto, "Jugador: %s", jugador->nombre);
     dibujar_texto_ttf(renderer, nombre_texto, 400, 25, 20, blanco);
 
     char puntos_texto[50];
-    sprintf(puntos_texto, "Puntos: %d", jugador.puntos);
+    sprintf(puntos_texto, "Puntos: %d", jugador->puntos);
     dibujar_rectangulo_relleno(renderer, 630, 15, 150, 35, 50, 80, 120);
     dibujar_texto_ttf(renderer, puntos_texto, 705, 32, 20, blanco);
 
     SDL_Color color_racha = blanco;
-    if (jugador.racha >= 5)
+    if (jugador->racha >= 5)
         color_racha = rojo;
-    else if (jugador.racha >= 3)
+    else if (jugador->racha >= 3)
         color_racha = amarillo;
-    else if (jugador.racha >= 1)
+    else if (jugador->racha >= 1)
         color_racha = verde;
 
     char racha_texto[50];
-    if (jugador.racha > 0)
+    if (jugador->racha > 0)
     {
-        sprintf(racha_texto, "Racha x%d", jugador.racha);
+        sprintf(racha_texto, "Racha x%d", jugador->racha);
         dibujar_rectangulo_relleno(renderer, 630, 55, 150, 30, 40, 60, 90);
         dibujar_texto_ttf(renderer, racha_texto, 705, 70, 18, color_racha);
     }
 
     char stats_texto[100];
-    sprintf(stats_texto, "Aciertos: %d  |  Fallos: %d", jugador.aciertos, jugador.fallos);
+    sprintf(stats_texto, "Aciertos: %d  |  Fallos: %d", jugador->aciertos, jugador->fallos);
     dibujar_texto_ttf(renderer, stats_texto, 400, 760, 16, blanco);
 }
 
@@ -130,23 +130,23 @@ void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mous
     if (estado_juego->jugador_actual == 1)
     {
         dibujar_hud_juego(renderer,
-                          estado_juego->jugador1,
+                          &estado_juego->jugador1,
                           mouseX,
                           mouseY);
     }
     else
     {
         dibujar_hud_juego(renderer,
-                          estado_juego->jugador2,
+                          &estado_juego->jugador2,
                           mouseX,
                           mouseY);
     }
 
-    if (estado_juego->modo_competitivo = 1)
+    if (estado_juego->config.modo_jugadores == 2)
     {
         SDL_Color blanco = {255, 255, 255, 255};
 
-        char turno_texto[100];
+        char turno_texto[50];
         sprintf(turno_texto, "Turno de: %s",
                 estado_juego->jugador_actual == 1
                     ? estado_juego->jugador1.nombre

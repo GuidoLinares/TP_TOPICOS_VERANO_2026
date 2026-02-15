@@ -300,8 +300,8 @@ void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu)
 
             else
             {
-                SDL_StopTextInput();
                 menu->pantalla_actual = PANTALLA_JUEGO;
+                SDL_StopTextInput();
             }
         }
     }
