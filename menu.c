@@ -190,8 +190,8 @@ int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *
     if (evento->type == SDL_MOUSEBUTTONDOWN)
     {
         int centro_x = 400;
-        int inicio_y = 100;
-        int espaciado_y = 80;
+        int inicio_y = 120;
+        int espaciado_y = 100;
 
         if (punto_en_rectangulo(mouseX, mouseY, centro_x - 150, inicio_y, 80, 50))
         {
