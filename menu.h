@@ -14,6 +14,7 @@
 #define PANTALLA_SALIR 4
 #define PANTALLA_INGRESO_NOMBRES 5
 
+
 #define BOTON_ANCHO 200
 #define BOTON_ALTO 50
 
@@ -48,5 +49,10 @@ int detectar_boton_menu(int mouseX, int mouseY);
 void liberar_menu();
 void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu);
 void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu);
+void dibujar_menu_stats(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY);
+int procesar_menu_stats(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY);
+int borrar_estadisticas();
+
+
 
 #endif

@@ -57,7 +57,6 @@ void dibujar_hud_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int 
     SDL_Color blanco = {255, 255, 255, 255};
     SDL_Color amarillo = {255, 215, 0, 255};
     SDL_Color verde = {50, 255, 100, 255};
-    SDL_Color rojo = {255, 80, 80, 255};
     SDL_Color azul_turno = {50, 120, 200, 255};
 
     int ancho_p = 180;

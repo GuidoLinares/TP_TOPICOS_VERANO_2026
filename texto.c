@@ -51,6 +51,13 @@ void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, 
         return;
 
     SDL_Texture *textura = SDL_CreateTextureFromSurface(renderer, superficie);
+    if (!textura) {
+        SDL_FreeSurface(superficie);
+        return;
+    }
+
+    SDL_SetTextureBlendMode(textura, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(textura, color.a);
 
     int texto_ancho = superficie->w;
     int texto_alto = superficie->h;
@@ -59,7 +66,8 @@ void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, 
         x - texto_ancho / 2,
         y - texto_alto / 2,
         texto_ancho,
-        texto_alto};
+        texto_alto
+    };
 
     SDL_RenderCopy(renderer, textura, NULL, &destino);
 

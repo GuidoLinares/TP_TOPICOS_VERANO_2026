@@ -1,4 +1,6 @@
 #include "juego.h"
+#include "config.h"
+#include <time.h>
 
 TDAVec *crear_tablero(int filas, int columnas)
 {
@@ -55,7 +57,6 @@ void mezclar_cartas(TDAVec *tablero, int total_cartas)
 
 int comparar_cartas(s_Carta *carta_1, s_Carta *carta_2)
 {
-
     if (carta_1 == NULL || carta_2 == NULL)
         return -1;
 
@@ -70,13 +71,11 @@ int comparar_cartas(s_Carta *carta_1, s_Carta *carta_2)
 
 int calcular_puntos(int aciertos_consecutivos)
 {
-
     return PUNTOS_DEFAULT + ((aciertos_consecutivos - 1) * BONUS_RACHA);
 }
 
 void procesar_acierto(s_Jugador *jugador, s_Carta *carta_1, s_Carta *carta_2)
 {
-
     jugador->racha++;
     jugador->puntos += calcular_puntos(jugador->racha);
     jugador->aciertos++;
@@ -87,7 +86,6 @@ void procesar_acierto(s_Jugador *jugador, s_Carta *carta_1, s_Carta *carta_2)
 
 void procesar_fallo(s_Jugador *jugador, s_Carta *carta_1, s_Carta *carta_2)
 {
-
     jugador->racha = 0;
     carta_1->estado = CARTA_OCULTA;
     carta_2->estado = CARTA_OCULTA;
@@ -96,7 +94,6 @@ void procesar_fallo(s_Jugador *jugador, s_Carta *carta_1, s_Carta *carta_2)
 
 int verificar_fin_juego(TDAVec *tablero)
 {
-
     if (!tablero)
         return 0;
 
@@ -113,7 +110,6 @@ int verificar_fin_juego(TDAVec *tablero)
 
 void cambiar_turno(s_EstadoJuego *estado)
 {
-
     if (estado->jugador_actual == 1)
     {
         estado->jugador_actual = 2;
@@ -152,6 +148,8 @@ void finalizar_juego(s_EstadoJuego *estado_juego)
         free(estado_juego->tablero);
         estado_juego->tablero = NULL;
     }
+
+    liberar_sonidos(&estado_juego->sonidos);
 
     estado_juego->juego_iniciado = 0;
     estado_juego->carta_seleccionada_1 = -1;
@@ -205,7 +203,7 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
     estado_juego->jugador1.fallos = 0;
     estado_juego->jugador1.racha = 0;
 
-    if (estado_juego->modo_competitivo)
+    if (estado_juego->config.modo_jugadores == 2)
     {
         strcpy(estado_juego->jugador2.nombre, estado_menu->nombre_jugador2);
         estado_juego->jugador2.puntos = 0;
@@ -215,6 +213,7 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
     }
 
     estado_juego->jugador_actual = 1;
+    estado_juego->modo_competitivo = (estado_juego->config.modo_jugadores == 2) ? 1 : 0;
 
     estado_juego->carta_seleccionada_1 = -1;
     estado_juego->carta_seleccionada_2 = -1;
@@ -233,6 +232,9 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
     sprintf(ruta_dorso, "img/dorso_%d", estado_juego->config.set_dorso);
 
     estado_juego->textura_dorso = cargar_textura(renderer, ruta_dorso);
+    
+    cargar_sonidos(&estado_juego->sonidos);
+    
     estado_juego->juego_iniciado = 1;
 }
 
@@ -255,9 +257,7 @@ void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int 
         if (indice == -1)
             return;
 
-        s_Carta *carta = (s_Carta *)obtenerVec(
-            estado_juego->tablero,
-            indice);
+        s_Carta *carta = (s_Carta *)obtenerVec(estado_juego->tablero, indice);
 
         if (carta->estado != CARTA_OCULTA)
             return;
@@ -267,8 +267,9 @@ void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int 
             estado_juego->carta_seleccionada_1 = indice;
             carta->estado = CARTA_VISIBLE;
             estado_juego->turno_actual = ESTADO_ESPERANDO_SEGUNDA;
+            
+            reproducir_sonido(estado_juego->sonidos.seleccion);
         }
-
         else if (estado_juego->turno_actual == ESTADO_ESPERANDO_SEGUNDA)
         {
             estado_juego->carta_seleccionada_2 = indice;
@@ -296,20 +297,56 @@ void actualizar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu)
             return;
 
         s_Carta *c1 = (s_Carta *)obtenerVec(estado_juego->tablero, estado_juego->carta_seleccionada_1);
-
         s_Carta *c2 = (s_Carta *)obtenerVec(estado_juego->tablero, estado_juego->carta_seleccionada_2);
 
-        s_Jugador *jugador_actual_ptr =
-            (estado_juego->jugador_actual == 1)
-                ? &estado_juego->jugador1
-                : &estado_juego->jugador2;
+        s_Jugador *jugador_actual_ptr = (estado_juego->jugador_actual == 1) ? &estado_juego->jugador1 : &estado_juego->jugador2;
 
         if (comparar_cartas(c1, c2))
         {
             procesar_acierto(jugador_actual_ptr, c1, c2);
+            reproducir_sonido(estado_juego->sonidos.acierto);
 
             if (verificar_fin_juego(estado_juego->tablero))
             {
+                Estadistica stats;
+                
+                strcpy(stats.nombre, estado_juego->jugador1.nombre);
+                stats.puntos = estado_juego->jugador1.puntos;
+                stats.aciertos = estado_juego->jugador1.aciertos;
+                stats.fallos = estado_juego->jugador1.fallos;
+                
+                time_t t = time(NULL);
+                struct tm *tm_info = localtime(&t);
+                strftime(stats.fecha, 20, "%Y-%m-%d", tm_info);
+                
+                guardar_estadistica(&stats);
+                printf("Estadistica guardada: %s - %d puntos\n", stats.nombre, stats.puntos);
+                
+                if (estado_juego->config.modo_jugadores == 2)
+                {
+                    Estadistica stats2;
+                    strcpy(stats2.nombre, estado_juego->jugador2.nombre);
+                    stats2.puntos = estado_juego->jugador2.puntos;
+                    stats2.aciertos = estado_juego->jugador2.aciertos;
+                    stats2.fallos = estado_juego->jugador2.fallos;
+                    strftime(stats2.fecha, 20, "%Y-%m-%d", tm_info);
+                    
+                    guardar_estadistica(&stats2);
+                    printf("Estadistica guardada: %s - %d puntos\n", stats2.nombre, stats2.puntos);
+                    
+                    printf("\nJUEGO TERMINADO!\n");
+                    if (stats.puntos > stats2.puntos) {
+                        printf("Ganador: %s con %d puntos\n", stats.nombre, stats.puntos);
+                    } else if (stats2.puntos > stats.puntos) {
+                        printf("Ganador: %s con %d puntos\n", stats2.nombre, stats2.puntos);
+                    } else {
+                        printf("EMPATE! Ambos con %d puntos\n", stats.puntos);
+                    }
+                } else {
+                    printf("\nJUEGO TERMINADO!\n");
+                    printf("Puntos: %d | Aciertos: %d | Fallos: %d\n", stats.puntos, stats.aciertos, stats.fallos);
+                }
+                
                 finalizar_juego(estado_juego);
                 estado_menu->pantalla_actual = PANTALLA_MENU;
                 return;
@@ -318,6 +355,7 @@ void actualizar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu)
         else
         {
             procesar_fallo(jugador_actual_ptr, c1, c2);
+            reproducir_sonido(estado_juego->sonidos.fallo);
 
             if (estado_juego->config.modo_jugadores == 2)
             {

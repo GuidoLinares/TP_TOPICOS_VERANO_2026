@@ -71,3 +71,10 @@ int cargar_estadisticas(Estadistica* stats, int max_registros) {
     fclose(archivo);
     return leidos;
 }
+
+int borrar_todas_estadisticas() {
+    if (remove(ARCHIVO_STATS) == 0) {
+        return 1;
+    }
+    return 0;
+}
