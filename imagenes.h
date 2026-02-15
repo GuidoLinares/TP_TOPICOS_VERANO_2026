@@ -12,6 +12,6 @@ typedef enum {
 }tFormatoImg;
 
 tFormatoImg imagenes_inicializar(void);
-SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *ruta);
+SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *imagen);
 
 #endif

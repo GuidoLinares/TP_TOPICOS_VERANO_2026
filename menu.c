@@ -14,7 +14,7 @@ void inicializar_menu(EstadoMenu *menu)
 
 void cargar_recursos_menu(SDL_Renderer *renderer)
 {
-    fondo_menu = cargar_textura(renderer, "img/fondo_menu.jpg");
+    fondo_menu = cargar_textura(renderer, "img/fondo_menu");
 
     if (!fondo_menu)
     {

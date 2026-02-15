@@ -214,22 +214,17 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
     estado_juego->carta_seleccionada_2 = -1;
     estado_juego->turno_actual = ESTADO_ESPERANDO_PRIMERA;
 
+    int offset = (estado_juego->config.set_imagenes == 0) ? 1 : 11;
+
     for (int i = 0; i < estado_juego->cant_pares; i++)
     {
         char ruta[100];
-        sprintf(ruta, "img/%d.png", i + 1);
+        sprintf(ruta, "img/%d", offset + i);
         estado_juego->textura_cartas[i] = cargar_textura(renderer, ruta);
     }
 
     char ruta_dorso[100];
-    if (estado_juego->config.set_dorso == 0)
-    {
-        strcpy(ruta_dorso, "img/dorso_0.jpg");
-    }
-    else
-    {
-        strcpy(ruta_dorso, "img/dorso_1.jpg");
-    }
+    sprintf(ruta_dorso, "img/dorso_%d", estado_juego->config.set_dorso);
 
     estado_juego->textura_dorso = cargar_textura(renderer, ruta_dorso);
     estado_juego->juego_iniciado = 1;

@@ -25,22 +25,28 @@ tFormatoImg imagenes_inicializar(void)
     return formatos;
 }
 
-SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *ruta)
+SDL_Texture *cargar_textura(SDL_Renderer *renderer, const char *imagen)
 {
-    SDL_Surface *surface = IMG_Load(ruta);
-    if (surface == NULL)
+    const char *extensiones[] = {".png", ".jpg", ".jpeg", ".bmp"};
+    char ruta_completa[256];
+
+    for (int i = 0; i < 4; i++)
     {
-        printf("Error al cargar imagen '%s': %s\n", ruta, IMG_GetError());
-        return NULL;
+        sprintf(ruta_completa, "%s%s", imagen, extensiones[i]);
+        SDL_Surface *surface = IMG_Load(ruta_completa);
+
+        if (surface != NULL)
+        {
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_FreeSurface(surface);
+
+            if (texture != NULL)
+            {
+                return texture;
+            }
+        }
     }
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    if (texture == NULL)
-    {
-        return NULL;
-    }
-
-    return texture;
+    printf("Error al cargar imagen '%s': %s\n", ruta_completa, IMG_GetError());
+    return NULL;
 }
