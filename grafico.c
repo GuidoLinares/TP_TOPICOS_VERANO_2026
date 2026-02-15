@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "grafico.h"
 
-
 Posicion calcular_posicion_carta(int indice, int filas, int columnas)
 {
     Posicion pos;
@@ -22,8 +21,6 @@ Posicion calcular_posicion_carta(int indice, int filas, int columnas)
 
     return pos;
 }
-
-
 
 void dibujar_carta(SDL_Renderer *renderer, s_Carta *carta, int x, int y, SDL_Texture *textura_dorso, SDL_Texture **texturas_cartas, int es_hover)
 {
@@ -117,6 +114,9 @@ void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mous
         return;
     }
 
+    SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
+    SDL_RenderClear(renderer);
+
     int carta_hover = convertir_clic_a_indice(mouseX, mouseY, estado_juego->config.filas, estado_juego->config.columnas);
 
     dibujar_tablero(renderer,
@@ -127,7 +127,7 @@ void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mous
                     estado_juego->textura_cartas,
                     carta_hover);
 
-    if (estado_juego->turno_actual == 1)
+    if (estado_juego->jugador_actual == 1)
     {
         dibujar_hud_juego(renderer,
                           estado_juego->jugador1,
@@ -142,21 +142,21 @@ void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mous
                           mouseY);
     }
 
-    if (estado_juego->modo_competitivo)
+    if (estado_juego->modo_competitivo = 1)
     {
         SDL_Color blanco = {255, 255, 255, 255};
 
-        char turno_texto[50];
-        sprintf(turno_texto, "Turno: %s",
-                estado_juego->turno_actual == 1
+        char turno_texto[100];
+        sprintf(turno_texto, "Turno de: %s",
+                estado_juego->jugador_actual == 1
                     ? estado_juego->jugador1.nombre
                     : estado_juego->jugador2.nombre);
 
         dibujar_texto_ttf(renderer,
                           turno_texto,
                           400,
-                          60,
-                          18,
+                          30,
+                          22,
                           blanco);
     }
 }

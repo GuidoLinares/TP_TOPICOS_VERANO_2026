@@ -221,7 +221,7 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
         estado_juego->textura_cartas[i] = cargar_textura(renderer, ruta);
     }
 
-    estado_juego->textura_dorso = cargar_textura(renderer, "dorso_1.jpg");
+    estado_juego->textura_dorso = cargar_textura(renderer, "img/dorso_1.jpg");
     estado_juego->juego_iniciado = 1;
 }
 
