@@ -16,6 +16,8 @@
 #define COLOR_CARTA_OCULTA_G 100
 #define COLOR_CARTA_OCULTA_B 200
 
+
+
 typedef struct
 {
     int x;
