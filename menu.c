@@ -42,32 +42,36 @@ void dibujar_menu_principal(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX
         SDL_RenderCopy(renderer, fondo_menu, NULL, NULL);
 
     int centro_x = 400;
-    int inicio_y = 150;
+    int inicio_y = 200;
     int espaciado = 80;
 
     SDL_Color blanco = {255, 255, 255, 255};
     SDL_Color amarillo = {255, 215, 0, 255};
+    SDL_Color negro = {13, 17, 23, 255};
 
-    dibujar_rectangulo_relleno(renderer, centro_x - 150, 50, 300, 60, 70, 130, 180);
+    dibujar_rectangulo_relleno(renderer, centro_x - 200, 50, 400, 60, 10, 15, 25);
+    SDL_SetRenderDrawColor(renderer, 0, 180, 215, 255);
+    SDL_Rect borde_titulo = {centro_x - 200, 50, 400, 60};
+    SDL_RenderDrawRect(renderer, &borde_titulo);
     dibujar_texto_ttf(renderer, "MEMOTEST-OMEGA", centro_x, 80, 60, blanco);
 
-    int hover_jugar = punto_en_rectangulo(mouseX, mouseY, centro_x - 100, inicio_y, BOTON_ANCHO, BOTON_ALTO);
-    dibujar_rectangulo_relleno(renderer, centro_x - 100, inicio_y, BOTON_ANCHO, BOTON_ALTO,
-                               hover_jugar ? 100 : 70, hover_jugar ? 150 : 100, hover_jugar ? 100 : 70);
-    dibujar_texto_ttf(renderer, "JUGAR", centro_x, inicio_y + 25, 40, hover_jugar ? amarillo : blanco);
+    int hover_jugar = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y, BOTON_ANCHO, BOTON_ALTO);
+    dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y, BOTON_ANCHO, BOTON_ALTO,
+                               hover_jugar ? 255 : 35, hover_jugar ? 140 : 40, hover_jugar ? 0 : 50);
+    dibujar_texto_ttf(renderer, "JUGAR", centro_x, inicio_y + 25, 40, hover_jugar ? negro : blanco);
 
-    int hover_config = punto_en_rectangulo(mouseX, mouseY, centro_x - 100, inicio_y + espaciado, BOTON_ANCHO, BOTON_ALTO);
-    dibujar_rectangulo_relleno(renderer, centro_x - 100, inicio_y + espaciado, BOTON_ANCHO, BOTON_ALTO,
-                               hover_config ? 100 : 70, hover_config ? 150 : 100, hover_config ? 100 : 70);
-    dibujar_texto_ttf(renderer, "CONFIGURACION", centro_x, inicio_y + espaciado + 25, 40, hover_config ? amarillo : blanco);
+    int hover_config = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y + espaciado, BOTON_ANCHO, BOTON_ALTO);
+    dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y + espaciado, BOTON_ANCHO, BOTON_ALTO,
+                               hover_config ? 255 : 35, hover_config ? 140 : 40, hover_config ? 0 : 50);
+    dibujar_texto_ttf(renderer, "CONFIGURACION", centro_x, inicio_y + espaciado + 25, 40, hover_config ? negro : blanco);
 
-    int hover_stats = punto_en_rectangulo(mouseX, mouseY, centro_x - 100, inicio_y + espaciado * 2, BOTON_ANCHO, BOTON_ALTO);
-    dibujar_rectangulo_relleno(renderer, centro_x - 100, inicio_y + espaciado * 2, BOTON_ANCHO, BOTON_ALTO,
-                               hover_stats ? 100 : 70, hover_stats ? 150 : 100, hover_stats ? 100 : 70);
-    dibujar_texto_ttf(renderer, "ESTADISTICAS", centro_x, inicio_y + espaciado * 2 + 25, 40, hover_stats ? amarillo : blanco);
+    int hover_stats = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y + espaciado * 2, BOTON_ANCHO, BOTON_ALTO);
+    dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y + espaciado * 2, BOTON_ANCHO, BOTON_ALTO,
+                               hover_stats ? 255 : 35, hover_stats ? 140 : 40, hover_stats ? 0 : 50);
+    dibujar_texto_ttf(renderer, "ESTADISTICAS", centro_x, inicio_y + espaciado * 2 + 25, 40, hover_stats ? negro : blanco);
 
-    int hover_salir = punto_en_rectangulo(mouseX, mouseY, centro_x - 100, inicio_y + espaciado * 3, BOTON_ANCHO, BOTON_ALTO);
-    dibujar_rectangulo_relleno(renderer, centro_x - 100, inicio_y + espaciado * 3, BOTON_ANCHO, BOTON_ALTO,
+    int hover_salir = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y + espaciado * 3, BOTON_ANCHO, BOTON_ALTO);
+    dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y + espaciado * 3, BOTON_ANCHO, BOTON_ALTO,
                                hover_salir ? 150 : 100, hover_salir ? 70 : 50, hover_salir ? 70 : 50);
     dibujar_texto_ttf(renderer, "SALIR", centro_x, inicio_y + espaciado * 3 + 25, 40, hover_salir ? amarillo : blanco);
 }
@@ -355,7 +359,6 @@ void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu)
     SDL_SetRenderDrawColor(renderer, 13, 17, 23, 140);
     SDL_Rect panel_config = {150, 130, 500, 420};
     SDL_RenderFillRect(renderer, &panel_config);
-
 
     SDL_Color colorJ1 = (menu->jugador_escribiendo == 1) ? amarillo : blanco;
     dibujar_texto_ttf(renderer, "Jugador 1:", centro_x, inicio_y, 24, colorJ1);

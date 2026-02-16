@@ -14,8 +14,8 @@
 #define PANTALLA_SALIR 4
 #define PANTALLA_INGRESO_NOMBRES 5
 
-#define BOTON_ANCHO 200
-#define BOTON_ALTO 50
+#define BOTON_ANCHO 240
+#define BOTON_ALTO 55
 
 typedef struct
 {
