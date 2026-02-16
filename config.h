@@ -12,6 +12,7 @@ typedef struct {
     int filas;
     int columnas;
     int set_imagenes;
+    int set_dorso;
     int modo_jugadores;
     int volumen;
 } Configuracion;
@@ -29,5 +30,6 @@ int cargar_configuracion(Configuracion* config);
 int guardar_configuracion(Configuracion* config);
 int guardar_estadistica(Estadistica* stats);
 int cargar_estadisticas(Estadistica* stats, int max_registros);
+int borrar_todas_estadisticas();
 
 #endif
