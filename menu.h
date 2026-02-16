@@ -5,18 +5,20 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "config.h"
-#include "juego.h"
+
 
 #define PANTALLA_MENU 0
-#define PANTALLA_CONFIG 1
+#define PANTALLA_CONFIG 1 
 #define PANTALLA_JUEGO 2
 #define PANTALLA_STATS 3
 #define PANTALLA_SALIR 4
+#define PANTALLA_INGRESO_NOMBRES 5
 
-#define BOTON_ANCHO 200
-#define BOTON_ALTO 50
+#define BOTON_ANCHO 240
+#define BOTON_ALTO 55
 
-typedef struct {
+typedef struct
+{
     int x;
     int y;
     int ancho;
@@ -25,25 +27,26 @@ typedef struct {
     int activo;
 } Boton;
 
-typedef struct {
+typedef struct
+{
     int pantalla_actual;
     Configuracion config;
     char nombre_jugador1[50];
     char nombre_jugador2[50];
+    int jugador_escribiendo;
 } EstadoMenu;
 
-void inicializar_menu(EstadoMenu* menu);
-int procesar_menu_principal(SDL_Renderer* renderer, SDL_Event* evento, EstadoMenu* menu, int mouseX, int mouseY);
-int procesar_menu_config(SDL_Renderer* renderer, SDL_Event* evento, EstadoMenu* menu, int mouseX, int mouseY);
-void dibujar_menu_principal(SDL_Renderer* renderer, EstadoMenu* menu, int mouseX, int mouseY);
-void dibujar_menu_config(SDL_Renderer* renderer, EstadoMenu* menu, int mouseX, int mouseY);
-void dibujar_rectangulo_relleno(SDL_Renderer* renderer, int x, int y, int w, int h, int r, int g, int b);
-void dibujar_texto_simple(SDL_Renderer* renderer, const char* texto, int x, int y, int tamanio);
+void inicializar_menu(EstadoMenu *menu);
+void cargar_recursos_menu(SDL_Renderer *renderer);
 int punto_en_rectangulo(int px, int py, int rx, int ry, int rw, int rh);
-int inicializar_ttf();
-void cerrar_ttf();
-void dibujar_texto_ttf(SDL_Renderer* renderer, const char* texto, int x, int y, int tamanio, SDL_Color color);
-void dibujar_hud_juego(SDL_Renderer* renderer, s_Jugador* jugador, int mouseX, int mouseY);
+void dibujar_rectangulo_relleno(SDL_Renderer *renderer, int x, int y, int w, int h, int r, int g, int b);
+void dibujar_menu_principal(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY);
+int procesar_menu_principal(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY);
+void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY);
+int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY);
 int detectar_boton_menu(int mouseX, int mouseY);
+void liberar_menu();
+void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu);
+void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu);
 
 #endif
