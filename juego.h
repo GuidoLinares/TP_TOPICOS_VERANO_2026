@@ -2,11 +2,13 @@
 #define JUEGO_H
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include "tda_vector.h"
 #include <time.h>
 #include "config.h"
 #include "menu.h"
 #include "imagenes.h"
+#include "sonido.h"
 
 #define CARTA_OCULTA 0
 #define CARTA_VISIBLE 1
@@ -71,6 +73,8 @@ typedef struct
 
     Uint32 tiempo_comparacion;
     int esperando_delay;
+    
+    Sonidos sonidos;
 } s_EstadoJuego;
 
 typedef struct

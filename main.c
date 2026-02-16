@@ -1,3 +1,29 @@
+/*
+=================================================
+TRABAJO PRACTICO - TOPICOS DE PROGRAMACION
+Tercer Cuatrimestre 2025 - Curso de Verano
+Grupo: OMEGA
+=================================================
+
+Apellido: LINARES, GUIDO HERNAN
+DNI: 43170056
+Entrega: Si
+
+Apellido: LANARI VARAMO, LARA VICTORIA
+DNI: 44263607
+Entrega: Si
+
+Apellido: BRUNO, SANTINO
+DNI: 44392059
+Entrega: No
+
+Apellido: CONDORI CHUMACERO, DANIEL JESUS
+DNI: 95488949
+Entrega: No
+
+=================================================
+*/
+
 #include <SDL.h>
 #include <stdio.h>
 #include "menu.h"
@@ -5,10 +31,11 @@
 #include "texto.h"
 #include "grafico.h"
 #include "juego.h"
+#include "sonido.h"
 
 int main(int argc, char *argv[])
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         printf("Error al inicializar SDL %s \n", SDL_GetError());
         return -1;
@@ -49,7 +76,6 @@ int main(int argc, char *argv[])
     if (!inicializar_ttf())
     {
         printf("Error al inicializar TTF:%s\n", TTF_GetError());
-
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(ventana);
         TTF_Quit();
@@ -58,9 +84,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if (!inicializar_audio())
+    {
+        printf("Advertencia: Audio no disponible\n");
+    }
+
     inicializar_fonts();
     EstadoMenu estado_menu;
-    s_EstadoJuego estado_juego;
+    s_EstadoJuego estado_juego = {0};
     inicializar_menu(&estado_menu);
     cargar_recursos_menu(renderer);
 
@@ -105,8 +136,11 @@ int main(int argc, char *argv[])
             case PANTALLA_JUEGO:
                 procesar_eventos_juego(&estado_juego, &evento, mouseX, mouseY, &estado_menu);
                 break;
+            case PANTALLA_STATS:
+                procesar_menu_stats(renderer,&evento,&estado_menu,mouseX, mouseY);
+                break;
             case PANTALLA_SALIR:
-                ejecutando = 0;
+                ejecutando = 0;                
                 break;
             }
         }
@@ -116,7 +150,6 @@ int main(int argc, char *argv[])
             if (!estado_juego.juego_iniciado)
             {
                 estado_juego.config = estado_menu.config;
-
                 iniciar_juego(&estado_juego, &estado_menu, renderer);
             }
             actualizar_juego(&estado_juego, &estado_menu);
@@ -138,13 +171,16 @@ int main(int argc, char *argv[])
         case PANTALLA_JUEGO:
             dibujar_juego(renderer, &estado_juego, mouseX, mouseY);
             break;
+        case PANTALLA_STATS:
+            dibujar_menu_stats(renderer, &estado_menu, mouseX, mouseY);
+            break;
         }
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
 
-    //donde agregar todo esto? dentro de liberar_menu?
+    cerrar_audio();
     IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(ventana);

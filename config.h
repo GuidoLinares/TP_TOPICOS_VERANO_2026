@@ -30,5 +30,6 @@ int cargar_configuracion(Configuracion* config);
 int guardar_configuracion(Configuracion* config);
 int guardar_estadistica(Estadistica* stats);
 int cargar_estadisticas(Estadistica* stats, int max_registros);
+int borrar_todas_estadisticas();
 
 #endif
