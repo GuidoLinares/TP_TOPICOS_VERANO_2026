@@ -27,18 +27,18 @@ TTF_Font *cargar_font(const char *path, uint32_t fontSize)
 
 void inicializar_fonts()
 {
-    fuente_grande = cargar_font("fnt/arial.ttf", 32);
-    fuente_mediana = cargar_font("fnt/arial.ttf", 24);
-    fuente_pequena = cargar_font("fnt/arial.ttf", 16);
+    fuente_grande = cargar_font("fnt/grande.ttf", 40);
+    fuente_mediana = cargar_font("fnt/mediana.ttf", 25);
+    fuente_pequena = cargar_font("fnt/pequena.ttf", 16);
 }
 
 void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, int tamanio, SDL_Color color)
 {
     TTF_Font *fuente = fuente_mediana;
 
-    if (tamanio >= 32)
+    if (tamanio >= 40)
         fuente = fuente_grande;
-    else if (tamanio >= 24)
+    else if (tamanio >= 20)
         fuente = fuente_mediana;
     else
         fuente = fuente_pequena;

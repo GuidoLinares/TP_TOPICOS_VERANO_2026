@@ -21,8 +21,8 @@
 #define ESTADO_FIN 3
 
 
-#define VENTANA_ANCHO 750
-#define VENTANA_ALTO 750
+#define VENTANA_ANCHO 800
+#define VENTANA_ALTO 800
 
 #define CARTA_ANCHO 100
 #define CARTA_ALTO 140
