@@ -81,7 +81,7 @@ int procesar_menu_principal(SDL_Renderer *renderer, SDL_Event *evento, EstadoMen
     if (evento->type == SDL_MOUSEBUTTONDOWN)
     {
         int centro_x = 400;
-        int inicio_y = 150;
+        int inicio_y = 200;
         int espaciado = 80;
 
         if (punto_en_rectangulo(mouseX, mouseY, centro_x - 100, inicio_y, BOTON_ANCHO, BOTON_ALTO))
@@ -289,7 +289,7 @@ int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *
 
 int detectar_boton_menu(int mouseX, int mouseY)
 {
-    return punto_en_rectangulo(mouseX, mouseY, 340, 700, 120, 40);
+    return punto_en_rectangulo(mouseX, mouseY, 340, 770, 120, 40);
 }
 
 void liberar_menu()
