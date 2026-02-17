@@ -46,6 +46,20 @@ int main(int argc, char *argv[])
         printf("No se pudieron inicializar formatos de imagen\n");
     }
 
+    if (!inicializar_ttf())
+    {
+        printf("Error al inicializar TTF:%s\n", TTF_GetError());
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    if (!inicializar_audio())
+    {
+        printf("Advertencia: Audio no disponible\n");
+    }
+
     SDL_Window *ventana = SDL_CreateWindow(
         "Memotest - OMEGA",
         SDL_WINDOWPOS_CENTERED,
@@ -73,27 +87,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!inicializar_ttf())
-    {
-        printf("Error al inicializar TTF:%s\n", TTF_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(ventana);
-        TTF_Quit();
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    if (!inicializar_audio())
-    {
-        printf("Advertencia: Audio no disponible\n");
-    }
-
-    inicializar_fonts();
+    cargar_recursos_menu(renderer);
     EstadoMenu estado_menu;
     s_EstadoJuego estado_juego = {0};
     inicializar_menu(&estado_menu);
-    cargar_recursos_menu(renderer);
 
     int ejecutando = 1;
     SDL_Event evento;
@@ -124,6 +121,9 @@ int main(int argc, char *argv[])
             }
             switch (estado_menu.pantalla_actual)
             {
+            case PANTALLA_PRESENTACION:
+                procesar_presentacion(&evento, &estado_menu);
+                break;
             case PANTALLA_MENU:
                 procesar_menu_principal(renderer, &evento, &estado_menu, mouseX, mouseY);
                 break;
@@ -134,13 +134,14 @@ int main(int argc, char *argv[])
                 procesar_ingreso_nombres(&evento, &estado_menu);
                 break;
             case PANTALLA_JUEGO:
+            case PANTALLA_RESULTADOS:
                 procesar_eventos_juego(&estado_juego, &evento, mouseX, mouseY, &estado_menu);
                 break;
             case PANTALLA_STATS:
-                procesar_menu_stats(renderer,&evento,&estado_menu,mouseX, mouseY);
+                procesar_menu_stats(renderer, &evento, &estado_menu, mouseX, mouseY);
                 break;
             case PANTALLA_SALIR:
-                ejecutando = 0;                
+                ejecutando = 0;
                 break;
             }
         }
@@ -159,6 +160,9 @@ int main(int argc, char *argv[])
 
         switch (estado_menu.pantalla_actual)
         {
+        case PANTALLA_PRESENTACION:
+            dibujar_presentacion(renderer, &estado_menu);
+            break;
         case PANTALLA_MENU:
             dibujar_menu_principal(renderer, &estado_menu, mouseX, mouseY);
             break;
@@ -171,6 +175,10 @@ int main(int argc, char *argv[])
         case PANTALLA_JUEGO:
             dibujar_juego(renderer, &estado_juego, mouseX, mouseY);
             break;
+        case PANTALLA_RESULTADOS:
+            dibujar_juego(renderer, &estado_juego, mouseX, mouseY);
+            dibujar_fin_juego(renderer, &estado_juego);
+            break;
         case PANTALLA_STATS:
             dibujar_menu_stats(renderer, &estado_menu, mouseX, mouseY);
             break;
@@ -180,13 +188,13 @@ int main(int argc, char *argv[])
         SDL_Delay(16);
     }
 
+    liberar_menu();
     cerrar_audio();
+    TTF_Quit();
     IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(ventana);
     SDL_Quit();
-    finalizar_ttf();
-    liberar_menu();
 
     return 0;
 }

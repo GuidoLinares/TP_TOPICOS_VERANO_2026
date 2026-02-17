@@ -97,7 +97,7 @@ ESTRUCTURA DE ARCHIVOS:
 =================================================
 
 Archivos de codigo (.c y .h):
-- main.c / main.h
+- main.c
 - juego.c / juego.h
 - menu.c / menu.h
 - config.c / config.h

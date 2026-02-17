@@ -17,7 +17,6 @@ typedef struct
 int crearVec(TDAVec *TDA, size_t longitud, size_t tamanio);
 void destruirVec (TDAVec *TDA);
 int insertarVec(TDAVec *TDA, void*ingreso);
-void mostrarVec(TDAVec*TDA);
 void* obtenerVec(TDAVec*TDA, size_t indice);
 size_t longitudVec(TDAVec *TDA);
 

@@ -72,8 +72,11 @@ int cargar_estadisticas(Estadistica* stats, int max_registros) {
     return leidos;
 }
 
-int borrar_todas_estadisticas() {
-    if (remove(ARCHIVO_STATS) == 0) {
+int borrar_estadisticas()
+{
+    if (remove(ARCHIVO_STATS) == 0)
+    {
+        printf("Estadisticas borradas correctamente\n");
         return 1;
     }
     return 0;

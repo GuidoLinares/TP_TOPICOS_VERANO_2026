@@ -38,11 +38,6 @@ int insertarVec(TDAVec *TDA, void*ingreso){
     return 1;
 };
 
-
-void mostrarVec(TDAVec *TDA){
-};
-
-
 void* obtenerVec(TDAVec*TDA,size_t indice){
     if (indice >= TDA->cantEl) return NULL;
 

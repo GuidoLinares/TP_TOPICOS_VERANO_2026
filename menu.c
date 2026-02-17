@@ -6,7 +6,10 @@ static SDL_Texture *fondo_menu = NULL;
 
 void inicializar_menu(EstadoMenu *menu)
 {
-    menu->pantalla_actual = PANTALLA_MENU;
+    menu->pantalla_actual = PANTALLA_PRESENTACION;
+    menu->inicio_presentacion = SDL_GetTicks();
+    menu->final_presentacion = 0;
+
     cargar_configuracion(&menu->config);
 }
 
@@ -18,6 +21,8 @@ void cargar_recursos_menu(SDL_Renderer *renderer)
     {
         printf("ERROR: fondo_menu es NULL\n");
     }
+
+    inicializar_fonts();
 }
 
 int punto_en_rectangulo(int px, int py, int rx, int ry, int rw, int rh)
@@ -58,22 +63,22 @@ void dibujar_menu_principal(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX
     int hover_jugar = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y, BOTON_ANCHO, BOTON_ALTO);
     dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y, BOTON_ANCHO, BOTON_ALTO,
                                hover_jugar ? 255 : 35, hover_jugar ? 140 : 40, hover_jugar ? 0 : 50);
-    dibujar_texto_ttf(renderer, "JUGAR", centro_x, inicio_y + 25, 40, hover_jugar ? negro : blanco);
+    dibujar_texto_ttf(renderer, "EXECUTE", centro_x, inicio_y + 25, 40, hover_jugar ? negro : blanco);
 
     int hover_config = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y + espaciado, BOTON_ANCHO, BOTON_ALTO);
     dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y + espaciado, BOTON_ANCHO, BOTON_ALTO,
                                hover_config ? 255 : 35, hover_config ? 140 : 40, hover_config ? 0 : 50);
-    dibujar_texto_ttf(renderer, "CONFIGURACION", centro_x, inicio_y + espaciado + 25, 40, hover_config ? negro : blanco);
+    dibujar_texto_ttf(renderer, "SYSTEM_CONFIG", centro_x, inicio_y + espaciado + 25, 40, hover_config ? negro : blanco);
 
     int hover_stats = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y + espaciado * 2, BOTON_ANCHO, BOTON_ALTO);
     dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y + espaciado * 2, BOTON_ANCHO, BOTON_ALTO,
                                hover_stats ? 255 : 35, hover_stats ? 140 : 40, hover_stats ? 0 : 50);
-    dibujar_texto_ttf(renderer, "ESTADISTICAS", centro_x, inicio_y + espaciado * 2 + 25, 40, hover_stats ? negro : blanco);
+    dibujar_texto_ttf(renderer, "LOG_HISTORY", centro_x, inicio_y + espaciado * 2 + 25, 40, hover_stats ? negro : blanco);
 
     int hover_salir = punto_en_rectangulo(mouseX, mouseY, (centro_x - (BOTON_ANCHO / 2)), inicio_y + espaciado * 3, BOTON_ANCHO, BOTON_ALTO);
     dibujar_rectangulo_relleno(renderer, centro_x - (BOTON_ANCHO / 2), inicio_y + espaciado * 3, BOTON_ANCHO, BOTON_ALTO,
                                hover_salir ? 150 : 100, hover_salir ? 70 : 50, hover_salir ? 70 : 50);
-    dibujar_texto_ttf(renderer, "SALIR", centro_x, inicio_y + espaciado * 3 + 25, 40, hover_salir ? amarillo : blanco);
+    dibujar_texto_ttf(renderer, "TERMINATE", centro_x, inicio_y + espaciado * 3 + 25, 40, hover_salir ? amarillo : blanco);
 }
 
 int procesar_menu_principal(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY)
@@ -128,14 +133,14 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
         SDL_RenderCopy(renderer, fondo_menu, NULL, NULL);
 
     dibujar_rectangulo_relleno(renderer, 200, 30, 400, 50, 20, 35, 60);
-    dibujar_texto_ttf(renderer, "CONFIGURACION", 400, 55, 65, blanco);
+    dibujar_texto_ttf(renderer, "SYSTEM_CONFIG", 400, 55, 65, blanco);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 13, 17, 23, 140);
     SDL_Rect panel_config = {50, 90, 700, 520};
     SDL_RenderFillRect(renderer, &panel_config);
 
-    dibujar_texto_ttf(renderer, "DIMENSIONES DEL TABLERO", 400, 130, 19, blanco);
+    dibujar_texto_ttf(renderer, "[ GRID_SIZE ]", 400, 130, 19, blanco);
 
     int es_3x4 = (menu->config.filas == 3 && menu->config.columnas == 4);
     dibujar_rectangulo_relleno(renderer, 250, 150, 80, 50,
@@ -158,7 +163,7 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
                                es_4x5 ? 0 : 50);
     dibujar_texto_ttf(renderer, "4x5", 510, 175, 30, es_4x5 ? negro : blanco);
 
-    dibujar_texto_ttf(renderer, "SET DE CARTAS", 400, 240, 19, blanco);
+    dibujar_texto_ttf(renderer, "[ ASSETS_PACK ]", 400, 240, 19, blanco);
 
     int set_lenguajes = (menu->config.set_imagenes == 0);
     dibujar_rectangulo_relleno(renderer, 50, 260, 340, 60,
@@ -174,7 +179,7 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
                                set_navegadores ? 0 : 50);
     dibujar_texto_ttf(renderer, "NAVEGADORES WEB", 580, 290, 21, set_navegadores ? negro : blanco);
 
-    dibujar_texto_ttf(renderer, "DORSO CARTAS", 400, 350, 19, blanco);
+    dibujar_texto_ttf(renderer, "[ THEME_SKIN ]", 400, 350, 19, blanco);
 
     int set_rojo = (menu->config.set_dorso == 0);
     dibujar_rectangulo_relleno(renderer, 250, 370, 130, 60,
@@ -190,7 +195,7 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
                                set_violeta ? 0 : 50);
     dibujar_texto_ttf(renderer, "VIOLETA", 485, 400, 24, set_violeta ? negro : blanco);
 
-    dibujar_texto_ttf(renderer, "CANTIDAD DE JUGADORES", 400, 460, 19, blanco);
+    dibujar_texto_ttf(renderer, "[ INSTANCES ]", 400, 460, 19, blanco);
 
     int modo_1 = (menu->config.modo_jugadores == 1);
     dibujar_rectangulo_relleno(renderer, 320, 480, 80, 60,
@@ -209,12 +214,12 @@ void dibujar_menu_config(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, i
     int hover_guardar = punto_en_rectangulo(mouseX, mouseY, 250, 640, 140, 50);
     dibujar_rectangulo_relleno(renderer, 250, 640, 140, 50,
                                hover_guardar ? 100 : 60, hover_guardar ? 180 : 130, hover_guardar ? 100 : 70);
-    dibujar_texto_ttf(renderer, "GUARDAR", 320, 665, 20, hover_guardar ? amarillo : blanco);
+    dibujar_texto_ttf(renderer, "COMMIT_CHANGES", 320, 665, 19, hover_guardar ? amarillo : blanco);
 
     int hover_volver = punto_en_rectangulo(mouseX, mouseY, 410, 640, 140, 50);
     dibujar_rectangulo_relleno(renderer, 410, 640, 140, 50,
                                hover_volver ? 150 : 100, hover_volver ? 80 : 60, hover_volver ? 80 : 60);
-    dibujar_texto_ttf(renderer, "VOLVER", 480, 665, 20, hover_volver ? amarillo : blanco);
+    dibujar_texto_ttf(renderer, "ABORT_SESSION", 480, 665, 19, hover_volver ? amarillo : blanco);
 }
 
 int procesar_menu_config(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY)
@@ -296,6 +301,8 @@ void liberar_menu()
 {
     if (fondo_menu)
         SDL_DestroyTexture(fondo_menu);
+
+    cerrar_fonts();
 }
 
 void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu)
@@ -353,7 +360,7 @@ void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu)
     SDL_Color amarillo = {255, 255, 0, 255};
     SDL_Color gris = {100, 100, 100, 255};
 
-    dibujar_texto_ttf(renderer, "CONFIGURACION DE JUGADORES", centro_x, 70, 50, blanco);
+    dibujar_texto_ttf(renderer, "USERS_SETUP", centro_x, 70, 50, blanco);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 13, 17, 23, 140);
@@ -361,7 +368,7 @@ void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu)
     SDL_RenderFillRect(renderer, &panel_config);
 
     SDL_Color colorJ1 = (menu->jugador_escribiendo == 1) ? amarillo : blanco;
-    dibujar_texto_ttf(renderer, "Jugador 1:", centro_x, inicio_y, 24, colorJ1);
+    dibujar_texto_ttf(renderer, "PRIMARY_USER:", centro_x, inicio_y, 24, colorJ1);
 
     SDL_Rect rectJ1 = {centro_x - 150, inicio_y + 20, 300, 50};
     SDL_SetRenderDrawColor(renderer, colorJ1.r, colorJ1.g, colorJ1.b, 255);
@@ -373,13 +380,13 @@ void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu)
     }
     else if (menu->jugador_escribiendo == 1)
     {
-        dibujar_texto_ttf(renderer, "Escribiendo...", centro_x, inicio_y + 85, 16, gris);
+        dibujar_texto_ttf(renderer, "INPUT DETECTED...", centro_x, inicio_y + 85, 16, gris);
     }
 
     if (menu->config.modo_jugadores == 2)
     {
         SDL_Color colorJ2 = (menu->jugador_escribiendo == 2) ? amarillo : blanco;
-        dibujar_texto_ttf(renderer, "Jugador 2:", centro_x, inicio_y + espaciado, 24, colorJ2);
+        dibujar_texto_ttf(renderer, "SECONDARY_USER:", centro_x, inicio_y + espaciado, 24, colorJ2);
 
         SDL_Rect rectJ2 = {centro_x - 150, inicio_y + espaciado + 20, 300, 45};
         SDL_SetRenderDrawColor(renderer, colorJ2.r, colorJ2.g, colorJ2.b, 255);
@@ -391,141 +398,152 @@ void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu)
         }
         else if (menu->jugador_escribiendo == 2)
         {
-            dibujar_texto_ttf(renderer, "Escribiendo...", centro_x, inicio_y + espaciado + 85, 16, gris);
+            dibujar_texto_ttf(renderer, "INPUT DETECTED...", centro_x, inicio_y + espaciado + 85, 16, gris);
         }
     }
-    dibujar_texto_ttf(renderer, "Presione ENTER para confirmar", centro_x, 520, 18, blanco);
+    dibujar_texto_ttf(renderer, "PRESS ENTER TO CONFIRM CHANGES", centro_x, 520, 18, blanco);
 }
 
-int comparar_estadisticas(const void* a, const void* b) {
-    Estadistica* stat_a = (Estadistica*)a;
-    Estadistica* stat_b = (Estadistica*)b;
+int comparar_estadisticas(const void *a, const void *b)
+{
+    Estadistica *stat_a = (Estadistica *)a;
+    Estadistica *stat_b = (Estadistica *)b;
     return stat_b->puntos - stat_a->puntos;
 }
 
-int borrar_estadisticas() {
-    if (remove(ARCHIVO_STATS) == 0) {
-        printf("Estadisticas borradas correctamente\n");
-        return 1;
-    }
-    return 0;
-}
-
-void dibujar_menu_stats(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY) {
+void dibujar_menu_stats(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY)
+{
     SDL_SetRenderDrawColor(renderer, 30, 30, 50, 255);
     SDL_RenderClear(renderer);
-    
+
     int centro_x = 400;
-    
+
     SDL_Color blanco = {255, 255, 255, 255};
     SDL_Color amarillo = {255, 215, 0, 255};
     SDL_Color gris = {150, 150, 150, 255};
-    SDL_Color verde = {0,255,0,1};
-    
+    SDL_Color verde = {0, 255, 0, 255};
+
     dibujar_rectangulo_relleno(renderer, centro_x - 300, 30, 600, 60, 70, 130, 180);
-    dibujar_texto_ttf(renderer, "MEJORES PUNTAJES", centro_x, 60, 32, blanco);
-    
+    dibujar_texto_ttf(renderer, "TOP_SCORES", centro_x, 60, 42, blanco);
+
     Estadistica stats[100];
     int cantidad = cargar_estadisticas(stats, 100);
-    
-    if (cantidad > 0) {
+
+    if (cantidad > 0)
+    {
         qsort(stats, cantidad, sizeof(Estadistica), comparar_estadisticas);
-        
+
         int limite = cantidad < 10 ? cantidad : 10;
-        
+
         int tabla_x = centro_x - 280;
         int tabla_y = 130;
         int fila_alto = 45;
-        
-        dibujar_texto_ttf(renderer, "Pos", tabla_x + 30, tabla_y, 20, amarillo);
-        dibujar_texto_ttf(renderer, "Nombre", tabla_x + 150, tabla_y, 20, amarillo);
-        dibujar_texto_ttf(renderer, "Puntos", tabla_x + 320, tabla_y, 20, amarillo);
-        dibujar_texto_ttf(renderer, "Aciertos", tabla_x + 430, tabla_y, 20, amarillo);
-        dibujar_texto_ttf(renderer, "Fallos", tabla_x + 530, tabla_y, 20, amarillo);
-        
+
+        dibujar_texto_ttf(renderer, "RANK_POSITION", tabla_x + 20, tabla_y, 19, amarillo);
+        dibujar_texto_ttf(renderer, "USERNAME", tabla_x + 150, tabla_y, 19, amarillo);
+        dibujar_texto_ttf(renderer, "SCORE_VALUE", tabla_x + 280, tabla_y, 19, amarillo);
+        dibujar_texto_ttf(renderer, "MATCH_SUCCESS", tabla_x + 420, tabla_y, 19, amarillo);
+        dibujar_texto_ttf(renderer, "ERROR_COUNT", tabla_x + 550, tabla_y, 19, amarillo);
+
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
         SDL_RenderDrawLine(renderer, tabla_x, tabla_y + 20, tabla_x + 560, tabla_y + 20);
-        
-        for (int i = 0; i < limite; i++) {
+
+        for (int i = 0; i < limite; i++)
+        {
             int fila_y = tabla_y + 40 + (i * fila_alto);
-            
-            if (i % 2 == 0) {
+
+            if (i % 2 == 0)
+            {
                 dibujar_rectangulo_relleno(renderer, tabla_x - 10, fila_y - 15, 580, 40, 40, 50, 70);
             }
-            
+
             char pos_texto[10];
             sprintf(pos_texto, "%d", i + 1);
             dibujar_texto_ttf(renderer, pos_texto, tabla_x + 30, fila_y, 18, blanco);
-            
+
             dibujar_texto_ttf(renderer, stats[i].nombre, tabla_x + 150, fila_y, 18, blanco);
-            
+
             char puntos_texto[20];
             sprintf(puntos_texto, "%d", stats[i].puntos);
-            dibujar_texto_ttf(renderer, puntos_texto, tabla_x + 320, fila_y, 18, 
-                            stats[i].puntos > 200 ? amarillo : blanco);
-            
+            dibujar_texto_ttf(renderer, puntos_texto, tabla_x + 280, fila_y, 18,
+                              stats[i].puntos > 200 ? amarillo : blanco);
+
             char aciertos_texto[10];
             sprintf(aciertos_texto, "%d", stats[i].aciertos);
-            dibujar_texto_ttf(renderer, aciertos_texto, tabla_x + 430, fila_y, 18,verde);
-            
+            dibujar_texto_ttf(renderer, aciertos_texto, tabla_x + 420, fila_y, 18, verde);
+
             char fallos_texto[10];
             sprintf(fallos_texto, "%d", stats[i].fallos);
             SDL_Color color_fallos = {255, 100, 100, 255};
-            dibujar_texto_ttf(renderer, fallos_texto, tabla_x + 530, fila_y, 18, color_fallos);
+            dibujar_texto_ttf(renderer, fallos_texto, tabla_x + 520, fila_y, 18, color_fallos);
         }
-        
+
         char total_texto[50];
-        sprintf(total_texto, "Mostrando %d de %d registros", limite, cantidad);
+        sprintf(total_texto, "DISPLAYING %d OF %d LOG_ENTRIES", limite, cantidad);
         dibujar_texto_ttf(renderer, total_texto, centro_x, 650, 16, gris);
-        
-    } else {
-        dibujar_texto_ttf(renderer, "No hay estadisticas guardadas", centro_x, 350, 24, gris);
-        dibujar_texto_ttf(renderer, "Juega algunas partidas para ver tus records!", centro_x, 390, 18, gris);
     }
-    
+    else
+    {
+        dibujar_texto_ttf(renderer, "NO DATA AVAILABLE", centro_x, 350, 24, gris);
+        dibujar_texto_ttf(renderer, "EXECUTE SESSIONS TO GENERATE DATA", centro_x, 390, 18, gris);
+    }
+
     int hover_borrar = punto_en_rectangulo(mouseX, mouseY, centro_x - 220, 700, 180, 50);
     int hover_volver = punto_en_rectangulo(mouseX, mouseY, centro_x + 40, 700, 180, 50);
-    
-    if (cantidad > 0) {
+
+    if (cantidad > 0)
+    {
         dibujar_rectangulo_relleno(renderer, centro_x - 220, 700, 180, 50,
-                                    hover_borrar ? 180 : 120, 
-                                    hover_borrar ? 60 : 40, 
-                                    hover_borrar ? 60 : 40);
-        dibujar_texto_ttf(renderer, "BORRAR TODO", centro_x - 130, 725, 18, hover_borrar ? amarillo : blanco);
+                                   hover_borrar ? 180 : 120,
+                                   hover_borrar ? 60 : 40,
+                                   hover_borrar ? 60 : 40);
+        dibujar_texto_ttf(renderer, "RESET_DATASET", centro_x - 130, 725, 20, hover_borrar ? amarillo : blanco);
     }
-    
+
     dibujar_rectangulo_relleno(renderer, centro_x + 40, 700, 180, 50,
-                                hover_volver ? 100 : 70, 
-                                hover_volver ? 150 : 100, 
-                                hover_volver ? 100 : 70);
-    dibujar_texto_ttf(renderer, "VOLVER", centro_x + 130, 725, 18, hover_volver ? amarillo : blanco);
+                               hover_volver ? 100 : 70,
+                               hover_volver ? 150 : 100,
+                               hover_volver ? 100 : 70);
+    dibujar_texto_ttf(renderer, "MAIN_MENU", centro_x + 130, 725, 20, hover_volver ? amarillo : blanco);
 }
 
-int procesar_menu_stats(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY) {
-    if (evento->type == SDL_MOUSEBUTTONDOWN) {
+int procesar_menu_stats(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY)
+{
+    if (evento->type == SDL_MOUSEBUTTONDOWN)
+    {
         int centro_x = 400;
-        
+
         Estadistica stats[100];
         int cantidad = cargar_estadisticas(stats, 100);
-        
-        if (cantidad > 0 && punto_en_rectangulo(mouseX, mouseY, centro_x - 220, 700, 180, 50)) {
-            if (borrar_estadisticas()) {
+
+        if (cantidad > 0 && punto_en_rectangulo(mouseX, mouseY, centro_x - 220, 700, 180, 50))
+        {
+            if (borrar_estadisticas())
+            {
                 printf("Todas las estadisticas han sido eliminadas\n");
             }
             return 1;
         }
-        
-        if (punto_en_rectangulo(mouseX, mouseY, centro_x + 40, 700, 180, 50)) {
+
+        if (punto_en_rectangulo(mouseX, mouseY, centro_x + 40, 700, 180, 50))
+        {
             menu->pantalla_actual = PANTALLA_MENU;
             return 1;
         }
     }
-    
+
     return 0;
 }
 
-
-
-
-
-
+int procesar_presentacion(SDL_Event *evento, EstadoMenu *estado_menu)
+{
+    if (evento->type == SDL_KEYDOWN &&
+        evento->key.keysym.sym == SDLK_RETURN)
+    {
+        if (estado_menu->final_presentacion)
+        {
+            estado_menu->pantalla_actual = PANTALLA_MENU;
+        }
+    }
+    return 0;
+}

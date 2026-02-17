@@ -118,8 +118,6 @@ void cambiar_turno(s_EstadoJuego *estado)
     {
         estado->jugador_actual = 1;
     }
-
-    printf("DEBUG: El turno cambio a %d\n", estado->jugador_actual);
 }
 
 void finalizar_juego(s_EstadoJuego *estado_juego)
@@ -232,14 +230,26 @@ void iniciar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu, SDL_Ren
     sprintf(ruta_dorso, "img/dorso_%d", estado_juego->config.set_dorso);
 
     estado_juego->textura_dorso = cargar_textura(renderer, ruta_dorso);
-    
+
     cargar_sonidos(&estado_juego->sonidos);
-    
+
     estado_juego->juego_iniciado = 1;
 }
 
 void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int mouseX, int mouseY, EstadoMenu *estado_menu)
 {
+    if (estado_menu->pantalla_actual == PANTALLA_RESULTADOS)
+    {
+        if (evento->type == SDL_KEYDOWN &&
+            evento->key.keysym.sym == SDLK_RETURN)
+        {
+            finalizar_juego(estado_juego);
+            estado_menu->pantalla_actual = PANTALLA_MENU;
+            return;
+        }
+        return;
+    }
+
     if (!estado_juego || !estado_juego->tablero)
         return;
 
@@ -267,7 +277,7 @@ void procesar_eventos_juego(s_EstadoJuego *estado_juego, SDL_Event *evento, int 
             estado_juego->carta_seleccionada_1 = indice;
             carta->estado = CARTA_VISIBLE;
             estado_juego->turno_actual = ESTADO_ESPERANDO_SEGUNDA;
-            
+
             reproducir_sonido(estado_juego->sonidos.seleccion);
         }
         else if (estado_juego->turno_actual == ESTADO_ESPERANDO_SEGUNDA)
@@ -309,19 +319,19 @@ void actualizar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu)
             if (verificar_fin_juego(estado_juego->tablero))
             {
                 Estadistica stats;
-                
+
                 strcpy(stats.nombre, estado_juego->jugador1.nombre);
                 stats.puntos = estado_juego->jugador1.puntos;
                 stats.aciertos = estado_juego->jugador1.aciertos;
                 stats.fallos = estado_juego->jugador1.fallos;
-                
+
                 time_t t = time(NULL);
                 struct tm *tm_info = localtime(&t);
                 strftime(stats.fecha, 20, "%Y-%m-%d", tm_info);
-                
+
                 guardar_estadistica(&stats);
                 printf("Estadistica guardada: %s - %d puntos\n", stats.nombre, stats.puntos);
-                
+
                 if (estado_juego->config.modo_jugadores == 2)
                 {
                     Estadistica stats2;
@@ -330,25 +340,12 @@ void actualizar_juego(s_EstadoJuego *estado_juego, EstadoMenu *estado_menu)
                     stats2.aciertos = estado_juego->jugador2.aciertos;
                     stats2.fallos = estado_juego->jugador2.fallos;
                     strftime(stats2.fecha, 20, "%Y-%m-%d", tm_info);
-                    
+
                     guardar_estadistica(&stats2);
                     printf("Estadistica guardada: %s - %d puntos\n", stats2.nombre, stats2.puntos);
-                    
-                    printf("\nJUEGO TERMINADO!\n");
-                    if (stats.puntos > stats2.puntos) {
-                        printf("Ganador: %s con %d puntos\n", stats.nombre, stats.puntos);
-                    } else if (stats2.puntos > stats.puntos) {
-                        printf("Ganador: %s con %d puntos\n", stats2.nombre, stats2.puntos);
-                    } else {
-                        printf("EMPATE! Ambos con %d puntos\n", stats.puntos);
-                    }
-                } else {
-                    printf("\nJUEGO TERMINADO!\n");
-                    printf("Puntos: %d | Aciertos: %d | Fallos: %d\n", stats.puntos, stats.aciertos, stats.fallos);
                 }
-                
-                finalizar_juego(estado_juego);
-                estado_menu->pantalla_actual = PANTALLA_MENU;
+
+                estado_menu->pantalla_actual = PANTALLA_RESULTADOS;
                 return;
             }
         }

@@ -32,5 +32,7 @@ void dibujar_tablero(SDL_Renderer *renderer, TDAVec *tablero, int filas, int col
 
 void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mouseX, int mouseY);
 void dibujar_hud_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mouseX, int mouseY);
+void dibujar_fin_juego(SDL_Renderer *renderer, s_EstadoJuego *estado);
+void dibujar_presentacion(SDL_Renderer *renderer, EstadoMenu *estado);
 
 #endif

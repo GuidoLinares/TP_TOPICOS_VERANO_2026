@@ -6,13 +6,14 @@
 #include <SDL_ttf.h>
 #include "config.h"
 
-
 #define PANTALLA_MENU 0
-#define PANTALLA_CONFIG 1 
+#define PANTALLA_CONFIG 1
 #define PANTALLA_JUEGO 2
 #define PANTALLA_STATS 3
 #define PANTALLA_SALIR 4
 #define PANTALLA_INGRESO_NOMBRES 5
+#define PANTALLA_RESULTADOS 6
+#define PANTALLA_PRESENTACION 7
 
 #define BOTON_ANCHO 240
 #define BOTON_ALTO 55
@@ -34,6 +35,9 @@ typedef struct
     char nombre_jugador1[50];
     char nombre_jugador2[50];
     int jugador_escribiendo;
+
+    Uint32 inicio_presentacion;
+    int final_presentacion;
 } EstadoMenu;
 
 void inicializar_menu(EstadoMenu *menu);
@@ -50,8 +54,6 @@ void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu);
 void dibujar_ingreso_nombres(SDL_Renderer *renderer, EstadoMenu *menu);
 void dibujar_menu_stats(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY);
 int procesar_menu_stats(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *menu, int mouseX, int mouseY);
-int borrar_estadisticas();
-
-
+int procesar_presentacion(SDL_Event *evento, EstadoMenu *estado_menu);
 
 #endif
