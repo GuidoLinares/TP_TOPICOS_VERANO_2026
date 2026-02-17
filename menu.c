@@ -6,7 +6,10 @@ static SDL_Texture *fondo_menu = NULL;
 
 void inicializar_menu(EstadoMenu *menu)
 {
-    menu->pantalla_actual = PANTALLA_MENU;
+    menu->pantalla_actual = PANTALLA_PRESENTACION;
+    menu->inicio_presentacion = SDL_GetTicks();
+    menu->final_presentacion = 0;
+
     cargar_configuracion(&menu->config);
 }
 
@@ -18,7 +21,7 @@ void cargar_recursos_menu(SDL_Renderer *renderer)
     {
         printf("ERROR: fondo_menu es NULL\n");
     }
-    
+
     inicializar_fonts();
 }
 
@@ -298,7 +301,7 @@ void liberar_menu()
 {
     if (fondo_menu)
         SDL_DestroyTexture(fondo_menu);
-    
+
     cerrar_fonts();
 }
 
@@ -529,5 +532,18 @@ int procesar_menu_stats(SDL_Renderer *renderer, SDL_Event *evento, EstadoMenu *m
         }
     }
 
+    return 0;
+}
+
+int procesar_presentacion(SDL_Event *evento, EstadoMenu *estado_menu)
+{
+    if (evento->type == SDL_KEYDOWN &&
+        evento->key.keysym.sym == SDLK_RETURN)
+    {
+        if (estado_menu->final_presentacion)
+        {
+            estado_menu->pantalla_actual = PANTALLA_MENU;
+        }
+    }
     return 0;
 }

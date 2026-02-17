@@ -217,3 +217,37 @@ void dibujar_fin_juego(SDL_Renderer *renderer, s_EstadoJuego *estado)
 
     SDL_RenderPresent(renderer);
 }
+
+void dibujar_presentacion(SDL_Renderer *renderer, EstadoMenu *estado)
+{
+    SDL_Color blanco = {255, 255, 255, 255};
+    SDL_Color naranja = {255, 140, 0, 255};
+
+    int centro = 400;
+
+    Uint32 tiempo_transcurrido = SDL_GetTicks() - estado->inicio_presentacion;
+
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 150);
+    SDL_RenderClear(renderer);
+
+    dibujar_texto_ttf(renderer, "OMEGA MEMORY TEST", centro, centro - 150, 72, naranja);
+    dibujar_texto_ttf(renderer, "--------------------------------------", centro, centro - 120, 20, blanco);
+
+    if (tiempo_transcurrido > 500)
+    {
+        dibujar_texto_ttf(renderer, "> Activating memory challenge...", centro, centro - 40, 19, naranja);
+    }
+    if (tiempo_transcurrido > 1000)
+    {
+        dibujar_texto_ttf(renderer, "> Loading matrix...", centro, centro - 10, 19, naranja);
+    }
+    if (tiempo_transcurrido > 1500)
+    {
+        dibujar_texto_ttf(renderer, "> System ready.", centro, centro + 20, 19, naranja);
+    }
+    if (tiempo_transcurrido > 2000)
+    {
+        dibujar_texto_ttf(renderer, "Press ENTER to begin _", centro, centro + 150, 16, blanco);
+        estado->final_presentacion = 1;
+    }
+}

@@ -121,6 +121,9 @@ int main(int argc, char *argv[])
             }
             switch (estado_menu.pantalla_actual)
             {
+            case PANTALLA_PRESENTACION:
+                procesar_presentacion(&evento, &estado_menu);
+                break;
             case PANTALLA_MENU:
                 procesar_menu_principal(renderer, &evento, &estado_menu, mouseX, mouseY);
                 break;
@@ -157,6 +160,9 @@ int main(int argc, char *argv[])
 
         switch (estado_menu.pantalla_actual)
         {
+        case PANTALLA_PRESENTACION:
+            dibujar_presentacion(renderer, &estado_menu);
+            break;
         case PANTALLA_MENU:
             dibujar_menu_principal(renderer, &estado_menu, mouseX, mouseY);
             break;
