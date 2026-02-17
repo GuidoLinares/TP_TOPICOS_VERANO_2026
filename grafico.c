@@ -84,7 +84,6 @@ void dibujar_hud_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int 
 
     if (estado_juego->config.modo_jugadores == 2)
     {
-        char msj_turno[100];
         s_Jugador *jugador_en_turno = (estado_juego->jugador_actual == 1) ? &estado_juego->jugador1 : &estado_juego->jugador2;
 
         dibujar_texto_ttf(renderer, "TURNO DE", 400, 40, 18, amarillo);
@@ -161,4 +160,60 @@ void dibujar_juego(SDL_Renderer *renderer, s_EstadoJuego *estado_juego, int mous
                       estado_juego,
                       mouseX,
                       mouseY);
+}
+
+void dibujar_fin_juego(SDL_Renderer *renderer, s_EstadoJuego *estado)
+{
+    char titulo[100];
+    char detalle[100];
+    SDL_Color blanco = {255, 255, 255, 255};
+    SDL_Color naranja = {255, 140, 0, 255};
+
+    int aciertos_j1 = estado->jugador1.aciertos;
+    int aciertos_j2 = estado->jugador2.aciertos;
+
+    if (!estado->modo_competitivo)
+    {
+        snprintf(titulo, sizeof(titulo), "JUEGO TERMINADO");
+        snprintf(detalle, sizeof(detalle), "Puntaje final: %d aciertos", aciertos_j1);
+    }
+    else
+    {
+        if (aciertos_j1 > aciertos_j2)
+            snprintf(titulo, sizeof(titulo), "Gana %s", estado->jugador1.nombre);
+        else if (aciertos_j2 > aciertos_j1)
+            snprintf(titulo, sizeof(titulo), "Gana %s", estado->jugador2.nombre);
+        else
+            snprintf(titulo, sizeof(titulo), "EMPATE");
+
+        snprintf(detalle, sizeof(detalle), "%d vs %d aciertos", aciertos_j1, aciertos_j2);
+    }
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 150);
+    SDL_Rect pantalla = {0, 0, 800, 600};
+    SDL_RenderFillRect(renderer, &pantalla);
+
+    int ancho = 500;
+    int alto = 300;
+    int centro_x = 400;
+    int centro_y = 300;
+
+    SDL_Rect overlay = {
+        400 - ancho / 2,
+        300 - alto / 2,
+        ancho,
+        alto};
+
+    SDL_SetRenderDrawColor(renderer, 30, 35, 45, 255);
+    SDL_RenderFillRect(renderer, &overlay);
+
+    SDL_SetRenderDrawColor(renderer, 255, 140, 0, 255);
+    SDL_RenderDrawRect(renderer, &overlay);
+
+    dibujar_texto_ttf(renderer, titulo, centro_x, centro_y - 80, 55, blanco);
+    dibujar_texto_ttf(renderer, detalle, centro_x, centro_y, 22, blanco);
+    dibujar_texto_ttf(renderer, "Presiona ENTER para volver al Menu", centro_x, centro_y + 120, 18, naranja);
+
+    SDL_RenderPresent(renderer);
 }

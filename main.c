@@ -134,13 +134,14 @@ int main(int argc, char *argv[])
                 procesar_ingreso_nombres(&evento, &estado_menu);
                 break;
             case PANTALLA_JUEGO:
+            case PANTALLA_RESULTADOS:
                 procesar_eventos_juego(&estado_juego, &evento, mouseX, mouseY, &estado_menu);
                 break;
             case PANTALLA_STATS:
-                procesar_menu_stats(renderer,&evento,&estado_menu,mouseX, mouseY);
+                procesar_menu_stats(renderer, &evento, &estado_menu, mouseX, mouseY);
                 break;
             case PANTALLA_SALIR:
-                ejecutando = 0;                
+                ejecutando = 0;
                 break;
             }
         }
@@ -170,6 +171,10 @@ int main(int argc, char *argv[])
             break;
         case PANTALLA_JUEGO:
             dibujar_juego(renderer, &estado_juego, mouseX, mouseY);
+            break;
+        case PANTALLA_RESULTADOS:
+            dibujar_juego(renderer, &estado_juego, mouseX, mouseY);
+            dibujar_fin_juego(renderer, &estado_juego);
             break;
         case PANTALLA_STATS:
             dibujar_menu_stats(renderer, &estado_menu, mouseX, mouseY);
