@@ -18,6 +18,8 @@ void cargar_recursos_menu(SDL_Renderer *renderer)
     {
         printf("ERROR: fondo_menu es NULL\n");
     }
+    
+    inicializar_fonts();
 }
 
 int punto_en_rectangulo(int px, int py, int rx, int ry, int rw, int rh)
@@ -296,6 +298,8 @@ void liberar_menu()
 {
     if (fondo_menu)
         SDL_DestroyTexture(fondo_menu);
+    
+    cerrar_fonts();
 }
 
 void procesar_ingreso_nombres(SDL_Event *evento, EstadoMenu *menu)
@@ -402,16 +406,6 @@ int comparar_estadisticas(const void *a, const void *b)
     Estadistica *stat_a = (Estadistica *)a;
     Estadistica *stat_b = (Estadistica *)b;
     return stat_b->puntos - stat_a->puntos;
-}
-
-int borrar_estadisticas()
-{
-    if (remove(ARCHIVO_STATS) == 0)
-    {
-        printf("Estadisticas borradas correctamente\n");
-        return 1;
-    }
-    return 0;
 }
 
 void dibujar_menu_stats(SDL_Renderer *renderer, EstadoMenu *menu, int mouseX, int mouseY)

@@ -51,7 +51,8 @@ void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, 
         return;
 
     SDL_Texture *textura = SDL_CreateTextureFromSurface(renderer, superficie);
-    if (!textura) {
+    if (!textura)
+    {
         SDL_FreeSurface(superficie);
         return;
     }
@@ -66,8 +67,7 @@ void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, 
         x - texto_ancho / 2,
         y - texto_alto / 2,
         texto_ancho,
-        texto_alto
-    };
+        texto_alto};
 
     SDL_RenderCopy(renderer, textura, NULL, &destino);
 
@@ -75,12 +75,23 @@ void dibujar_texto_ttf(SDL_Renderer *renderer, const char *texto, int x, int y, 
     SDL_FreeSurface(superficie);
 }
 
-void cerrar_font(TTF_Font *fuente)
+void cerrar_fonts()
 {
-    TTF_CloseFont(fuente);
-}
+    if (fuente_grande)
+    {
+        TTF_CloseFont(fuente_grande);
+        fuente_grande = NULL;
+    }
 
-void finalizar_ttf(void)
-{
-    TTF_Quit();
+    if (fuente_mediana)
+    {
+        TTF_CloseFont(fuente_mediana);
+        fuente_mediana = NULL;
+    }
+
+    if (fuente_pequena)
+    {
+        TTF_CloseFont(fuente_pequena);
+        fuente_pequena = NULL;
+    }
 }

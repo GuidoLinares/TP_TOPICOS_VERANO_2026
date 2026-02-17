@@ -46,6 +46,20 @@ int main(int argc, char *argv[])
         printf("No se pudieron inicializar formatos de imagen\n");
     }
 
+    if (!inicializar_ttf())
+    {
+        printf("Error al inicializar TTF:%s\n", TTF_GetError());
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    if (!inicializar_audio())
+    {
+        printf("Advertencia: Audio no disponible\n");
+    }
+
     SDL_Window *ventana = SDL_CreateWindow(
         "Memotest - OMEGA",
         SDL_WINDOWPOS_CENTERED,
@@ -73,27 +87,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!inicializar_ttf())
-    {
-        printf("Error al inicializar TTF:%s\n", TTF_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(ventana);
-        TTF_Quit();
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    if (!inicializar_audio())
-    {
-        printf("Advertencia: Audio no disponible\n");
-    }
-
-    inicializar_fonts();
+    cargar_recursos_menu(renderer);
     EstadoMenu estado_menu;
     s_EstadoJuego estado_juego = {0};
     inicializar_menu(&estado_menu);
-    cargar_recursos_menu(renderer);
 
     int ejecutando = 1;
     SDL_Event evento;
@@ -185,13 +182,13 @@ int main(int argc, char *argv[])
         SDL_Delay(16);
     }
 
+    liberar_menu();
     cerrar_audio();
+    TTF_Quit();
     IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(ventana);
     SDL_Quit();
-    finalizar_ttf();
-    liberar_menu();
 
     return 0;
 }
